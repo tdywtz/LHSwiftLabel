@@ -18,6 +18,7 @@
 		1567B1F71DD6258A00CEB507 /* UIView+LHLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */; };
 		15ACA7551DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACA7541DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift */; };
 		15ACA7571DD6B1C20054E6C7 /* LHTextLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACA7561DD6B1C20054E6C7 /* LHTextLayout.swift */; };
+		4DDD16EF1DDC2F0D0084AA3F /* skt1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4DDD16EE1DDC2F0D0084AA3F /* skt1.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+LHLabel.swift"; sourceTree = "<group>"; };
 		15ACA7541DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSMutableAttributedString+LHText.swift"; sourceTree = "<group>"; };
 		15ACA7561DD6B1C20054E6C7 /* LHTextLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LHTextLayout.swift; sourceTree = "<group>"; };
+		4DDD16EE1DDC2F0D0084AA3F /* skt1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = skt1.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +111,7 @@
 				1567B1C81DD6251000CEB507 /* ViewController.swift */,
 				1567B1F41DD6253600CEB507 /* LHLabel.swift */,
 				1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */,
+				4DDD16EE1DDC2F0D0084AA3F /* skt1.jpg */,
 				15ACA7541DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift */,
 				15ACA7561DD6B1C20054E6C7 /* LHTextLayout.swift */,
 				1567B1CA1DD6251000CEB507 /* Main.storyboard */,
@@ -245,6 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1567B1D11DD6251000CEB507 /* LaunchScreen.storyboard in Resources */,
+				4DDD16EF1DDC2F0D0084AA3F /* skt1.jpg in Resources */,
 				1567B1CE1DD6251000CEB507 /* Assets.xcassets in Resources */,
 				1567B1CC1DD6251000CEB507 /* Main.storyboard in Resources */,
 			);
