@@ -14,9 +14,9 @@ extension UIView{
         get {
             return self.frame.minY;
         }
-        set (new){
+        set {
             var frame = self.frame;
-            frame.origin.y += new;
+            frame.origin.y += newValue;
             self.frame = frame;
         }
     }
@@ -25,9 +25,9 @@ extension UIView{
         get {
             return self.frame.minX;
         }
-        set (new){
+        set {
             var frame = self.frame;
-            frame.origin.x += new;
+            frame.origin.x += newValue;
             self.frame = frame;
         }
     }
@@ -36,9 +36,9 @@ extension UIView{
         get {
             return self.frame.maxY;
         }
-        set (new){
+        set {
             var frame = self.frame;
-            frame.origin.y = new - self.frame.height;
+            frame.origin.y = newValue - self.frame.height;
             self.frame = frame;
         }
     }
@@ -47,9 +47,9 @@ extension UIView{
         get {
             return self.frame.minX;
         }
-        set (new){
+        set {
             var frame = self.frame;
-            frame.origin.x = new - self.frame.width;
+            frame.origin.x = newValue - self.frame.width;
             self.frame = frame;
         }
     }
@@ -58,9 +58,9 @@ extension UIView{
         get {
             return self.frame.width;
         }
-        set (new){
+        set {
             var frame = self.frame;
-            frame.size.width = new;
+            frame.size.width = newValue;
             self.frame = frame;
         }
     }
@@ -69,9 +69,9 @@ extension UIView{
         get {
             return self.frame.height;
         }
-        set (new){
+        set {
             var frame = self.frame;
-            frame.size.height = new;
+            frame.size.height = newValue;
             self.frame = frame;
         }
     }
@@ -80,10 +80,10 @@ extension UIView{
         get {
             return self.frame.size;
         }
-        set (newSize){
+        set {
             var frame = self.frame;
-            frame.size.width = newSize.width;
-            frame.size.height = newSize.height;
+            frame.size.width = newValue.width;
+            frame.size.height = newValue.height;
             self.frame = frame;
         }
     }
@@ -92,9 +92,9 @@ extension UIView{
         get {
             return self.center.x
         }
-        set (new) {
+        set {
             var center = self.center;
-            center.x = new
+            center.x = newValue
             self.center = center;
         }
     }
@@ -103,9 +103,9 @@ extension UIView{
         get {
             return self.center.y
         }
-        set (new) {
+        set {
             var center = self.center;
-            center.y = new
+            center.y = newValue
             self.center = center;
         }
     }
@@ -114,10 +114,28 @@ extension UIView{
         get {
             return self.center
         }
-        set (newPoint) {
-            self.center = newPoint
+        set {
+            self.center = newValue
         }
     }
-    
 }
+
+
+
+extension UIView {
+
+    func image(at aView: UIView) -> UIImage? {
+
+        UIGraphicsBeginImageContextWithOptions(aView.lh_size, false, 0.0)
+        if let context = UIGraphicsGetCurrentContext(){
+            aView.layer.render(in: context)
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            return image
+        }
+            return nil
+
+    }
+}
+
 

@@ -641,16 +641,19 @@ extension NSMutableAttributedString{
     func add(image: UIImage?, frame: CGRect, range: NSRange) -> Void {
         let attribute = self.attribute(image: image, frame: frame)
         self.replaceCharacters(in: range, with: attribute)
+
     }
 
     func insert(image: UIImage?, frame: CGRect, index: Int) -> Void {
         let attribute = self.attribute(image: image, frame: frame)
         self.insert(attribute, at: index)
+
     }
 
     func append(image: UIImage?, frame: CGRect) -> Void {
         let attribute = self.attribute(image: image, frame: frame)
-        self .append(attribute)
+        self.append(attribute)
+
     }
 
     func attribute(image: UIImage?, frame: CGRect) -> NSAttributedString {
@@ -658,6 +661,9 @@ extension NSMutableAttributedString{
         attachment.image = image
         attachment.bounds = frame
         let attributed = NSAttributedString.init(attachment: attachment)
-        return attributed
+
+        let matt = NSMutableAttributedString.init(attributedString: attributed)
+        matt.lh_font = UIFont.systemFont(ofSize: 1)
+        return matt
     }
 }

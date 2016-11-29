@@ -11,7 +11,7 @@ import UIKit
 fileprivate let kLHTextRunAttributedName = "kLHTextRunAttributedName"
 
 typealias ElementResult = (range: NSRange, index: Int, value:Any)
-typealias LHImagePath = (bezier: UIBezierPath, image: UIImage, frame: CGRect)
+typealias LHImagePath = (bezier: UIBezierPath, image: UIImage?, frame: CGRect)
 
 protocol LHLabelDelegate : NSObjectProtocol{
     func didSelect(element: ElementResult)
@@ -43,7 +43,6 @@ open class LHLabel: UILabel {
             if text != nil {
                 attribute = NSAttributedString.init(string: text!)
             }
-
             attributedText = attribute
             updateTextStorage()
             setNeedsLayout()
@@ -127,32 +126,37 @@ open class LHLabel: UILabel {
 
     private func reviseSize(size: CGSize) -> CGSize {
         textContainer.size = CGSize(width: size.width-textInsets.left-textInsets.right, height: CGFloat.greatestFiniteMagnitude)
-
         var reviseSize = layoutManager.usedRect(for: textContainer).size
 
         reviseSize.width += textInsets.left + textInsets.right
         reviseSize.height += textInsets.top + textInsets.bottom
+        if textStorage.length == 0 {
+            return CGSize.init()
+        }
 
         return CGSize(width: ceil(reviseSize.width), height: ceil(reviseSize.height))
     }
 
 
-    //d
+    //MARK:draw
     open override func drawText(in rect: CGRect) {
+       
         let range = NSRange(location: 0, length: textStorage.length)
         let textRect = UIEdgeInsetsInsetRect(rect, textInsets)
 
         let newOrigin = self.textOrigin(inRect: textRect)
 
         for imagePath in imagePaths {
-            var frame = imagePath.frame
-            frame.origin.y += newOrigin.y
-            frame.origin.x += textRect.origin.x
+            if imagePath.image != nil {
+                var frame = imagePath.frame
+                frame.origin.y += newOrigin.y
+                frame.origin.x += textRect.origin.x
+                imagePath.image!.draw(in: frame)
+            }
 
-          //  imagePath.image.draw(in: frame)
-            imagePath.bezier.fill()
+           // imagePath.bezier.fill()
         }
-
+   
         layoutManager.drawBackground(forGlyphRange: range, at: newOrigin)
         layoutManager.drawGlyphs(forGlyphRange: range, at: newOrigin)
     }
@@ -189,7 +193,8 @@ open class LHLabel: UILabel {
         var range = NSRange.init()
         let id =  textStorage.attribute(kLHTextRunAttributedName, at: index, effectiveRange: &range)
         if id != nil {
-
+   let rect =   layoutManager.boundingRect(forGlyphRange: range, in: textContainer)
+            print(rect)
             let element = ElementResult(range: range, index: index, value: id!)
             return element
         }
@@ -263,7 +268,24 @@ open class LHLabel: UILabel {
     public  func addValue(value: Any, range: NSRange) {
         textStorage.addAttribute(kLHTextRunAttributedName, value: value, range: range);
         textStorage.setLh_color(color: selectedTextColor, range: range)
+
         setNeedsDisplay()
+    }
+
+    public func urlset(){
+        let urlPattern = "(^|[\\s.:;?\\-\\]<\\(])" + "((https?://|www\\.|pic\\.)[-\\w;/?:@&=+$\\|\\_.!~*\\|'()\\[\\]%#,☺]+[\\w/#](\\(\\))?)" + "(?=$|[\\s',\\|\\(\\).:;?\\-\\[\\]>\\)])"
+
+        let regular =  try? NSRegularExpression(pattern: urlPattern, options: [.caseInsensitive])
+
+        let ar = regular?.matches(in: textStorage.string, options: [], range: NSRange.init(location: 0, length: textStorage.string.characters.count))
+
+        if ar == nil {
+            return
+        }
+      let  results = ar! as [NSTextCheckingResult]
+        for result in results{
+            self.addValue(value: "ddf", range: result.range)
+        }
     }
 
     //MARK: - 添加避让路径
@@ -275,6 +297,19 @@ open class LHLabel: UILabel {
 
         textContainer.exclusionPaths = arr
         imagePaths = beziers
+
+        setNeedsDisplay()
+    }
+
+    func add(image: UIImage?, bezierRect: CGRect, insets: UIEdgeInsets) {
+
+        let bezier = UIBezierPath.init(rect: bezierRect)
+
+        let frame = UIEdgeInsetsInsetRect(bezierRect, insets)
+        let path = LHImagePath(bezier: bezier,image: image, frame: frame)
+
+        imagePaths.append(path)
+        textContainer.exclusionPaths.append(bezier)
 
         setNeedsDisplay()
     }
