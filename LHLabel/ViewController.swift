@@ -51,15 +51,15 @@ class ViewController: UIViewController, LHLabelDelegate {
 
         mAtt.lh_font = UIFont.systemFont(ofSize: 18)
         mAtt.setLh_font(font: UIFont.systemFont(ofSize: 10), range: NSRange.init(location: 0, length: 1))
-        mAtt.insert(image: UIImage.init(named: "skt1.jpg"), frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), index: 20)
+      //  mAtt.insert(image: UIImage.init(named: "skt1.jpg"), frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), index: 20)
 
 
         label.attributedText = mAtt
-        label.add(image: nil, bezierRect: CGRect.init(x: 10, y: 160, width: 40, height: 40), insets: UIEdgeInsets.zero)
-
-        let url = URL.init(string: "https://www.baidu.com")
-        label.addValue(value: url!, range: NSRange.init(location: 6, length: 4))
-        label.urlset()
+//        label.add(image: nil, bezierRect: CGRect.init(x: 10, y: 160, width: 40, height: 40), insets: UIEdgeInsets.zero)
+//
+//        let url = URL.init(string: "https://www.baidu.com")
+//        label.addValue(value: url!, range: NSRange.init(location: 6, length: 4))
+//        label.urlset()
         label.sizeToFit()
 
 

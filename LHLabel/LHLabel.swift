@@ -193,7 +193,7 @@ open class LHLabel: UILabel {
         var range = NSRange.init()
         let id =  textStorage.attribute(kLHTextRunAttributedName, at: index, effectiveRange: &range)
         if id != nil {
-   let rect =   layoutManager.boundingRect(forGlyphRange: range, in: textContainer)
+   let rect = layoutManager.boundingRect(forGlyphRange: range, in: textContainer)
             print(rect)
             let element = ElementResult(range: range, index: index, value: id!)
             return element
@@ -282,8 +282,8 @@ open class LHLabel: UILabel {
         if ar == nil {
             return
         }
-      let  results = ar! as [NSTextCheckingResult]
-        for result in results{
+
+        for result in ar!{
             self.addValue(value: "ddf", range: result.range)
         }
     }
@@ -332,3 +332,5 @@ extension LHLabel : NSLayoutManagerDelegate {
         return isNewRect
     }
 }
+
+
