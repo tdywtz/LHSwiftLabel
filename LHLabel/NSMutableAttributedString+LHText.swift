@@ -28,6 +28,7 @@
 //* 20. NSLinkAttributeName ->设置链接属性，点击后调用浏览器打开指定URL地址
 //* 21. NSAttachmentAttributeName ->设置文本附件,取值为NSTextAttachment对象,常用于文字图片混排
 import UIKit
+
 //MARK:
 extension NSMutableAttributedString{
 

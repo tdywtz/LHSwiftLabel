@@ -140,7 +140,7 @@ open class LHLabel: UILabel {
 
     //MARK:draw
     open override func drawText(in rect: CGRect) {
-       
+
         let range = NSRange(location: 0, length: textStorage.length)
         let textRect = UIEdgeInsetsInsetRect(rect, textInsets)
 
@@ -154,7 +154,7 @@ open class LHLabel: UILabel {
                 imagePath.image!.draw(in: frame)
             }
 
-           // imagePath.bezier.fill()
+            imagePath.bezier.fill()
         }
    
         layoutManager.drawBackground(forGlyphRange: range, at: newOrigin)
@@ -273,16 +273,10 @@ open class LHLabel: UILabel {
     }
 
     public func urlset(){
-        let urlPattern = "(^|[\\s.:;?\\-\\]<\\(])" + "((https?://|www\\.|pic\\.)[-\\w;/?:@&=+$\\|\\_.!~*\\|'()\\[\\]%#,☺]+[\\w/#](\\(\\))?)" + "(?=$|[\\s',\\|\\(\\).:;?\\-\\[\\]>\\)])"
-
-        let regular =  try? NSRegularExpression(pattern: urlPattern, options: [.caseInsensitive])
-
-        let ar = regular?.matches(in: textStorage.string, options: [], range: NSRange.init(location: 0, length: textStorage.string.characters.count))
-
+        let ar = RegexParser.urlResults(text: textStorage.string)
         if ar == nil {
             return
         }
-
         for result in ar!{
             self.addValue(value: "ddf", range: result.range)
         }
