@@ -18,6 +18,7 @@
 		1567B1F71DD6258A00CEB507 /* UIView+LHLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */; };
 		15ACA7551DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACA7541DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift */; };
 		15ACA7571DD6B1C20054E6C7 /* LHTextLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACA7561DD6B1C20054E6C7 /* LHTextLayout.swift */; };
+		4D3CE12A1E0166890091F6F6 /* MMLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D3CE1291E0166890091F6F6 /* MMLabel.swift */; };
 		4D93C2041DE57B2C00AC89CF /* buffer.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D93C2031DE57B2C00AC89CF /* buffer.png */; };
 		4DDD16EF1DDC2F0D0084AA3F /* skt1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4DDD16EE1DDC2F0D0084AA3F /* skt1.jpg */; };
 		4DF7BCCE1DEE626F00EFD9C0 /* RegexParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF7BCCD1DEE626F00EFD9C0 /* RegexParser.swift */; };
@@ -58,6 +59,7 @@
 		1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+LHLabel.swift"; sourceTree = "<group>"; };
 		15ACA7541DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSMutableAttributedString+LHText.swift"; sourceTree = "<group>"; };
 		15ACA7561DD6B1C20054E6C7 /* LHTextLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LHTextLayout.swift; sourceTree = "<group>"; };
+		4D3CE1291E0166890091F6F6 /* MMLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MMLabel.swift; sourceTree = "<group>"; };
 		4D93C2031DE57B2C00AC89CF /* buffer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buffer.png; sourceTree = "<group>"; };
 		4DDD16EE1DDC2F0D0084AA3F /* skt1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = skt1.jpg; sourceTree = "<group>"; };
 		4DF7BCCD1DEE626F00EFD9C0 /* RegexParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexParser.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 				1567B1C61DD6251000CEB507 /* AppDelegate.swift */,
 				1567B1C81DD6251000CEB507 /* ViewController.swift */,
 				1567B1F41DD6253600CEB507 /* LHLabel.swift */,
+				4D3CE1291E0166890091F6F6 /* MMLabel.swift */,
 				4DF7BCCD1DEE626F00EFD9C0 /* RegexParser.swift */,
 				1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */,
 				4DDD16EE1DDC2F0D0084AA3F /* skt1.jpg */,
@@ -285,6 +288,7 @@
 			files = (
 				1567B1C91DD6251000CEB507 /* ViewController.swift in Sources */,
 				1567B1F51DD6253600CEB507 /* LHLabel.swift in Sources */,
+				4D3CE12A1E0166890091F6F6 /* MMLabel.swift in Sources */,
 				4DF7BCCE1DEE626F00EFD9C0 /* RegexParser.swift in Sources */,
 				15ACA7551DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift in Sources */,
 				1567B1C71DD6251000CEB507 /* AppDelegate.swift in Sources */,
