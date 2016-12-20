@@ -13,6 +13,21 @@ class ViewController: UIViewController, LHLabelDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
        
+        
+        let mm = MMLabel.init(frame: self.view.frame)
+        self.view.addSubview(mm)
+        mm.backgroundColor = UIColor.gray
+        mm.lh_left = 100;
+        mm.lh_top = 100;
+        mm.lh_size = CGSize.init(width: 100, height: 100)
+    
+        let att = NSMutableAttributedString.init(string: "奥斯卡东方航空")
+        att.lh_font = UIFont.systemFont(ofSize: 16)
+        att.lh_color = UIColor.red
+        mm.textLayout = LHTextLayout.layout(size: CGSize.init(width: 80, height: 100), text: att)
+        return
+        
+        
         let label = LHLabel.init()
         label.backgroundColor = UIColor.lightGray
         label.textColor = UIColor.red
