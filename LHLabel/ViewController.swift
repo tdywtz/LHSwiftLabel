@@ -21,10 +21,13 @@ class ViewController: UIViewController, LHLabelDelegate {
         mm.lh_top = 100;
         mm.lh_size = CGSize.init(width: 100, height: 100)
     
-        let att = NSMutableAttributedString.init(string: "奥斯卡东方航空")
+        let att = NSMutableAttributedString.init(string: "奥斯卡东方航空\nsadgdsf")
         att.lh_font = UIFont.systemFont(ofSize: 16)
         att.lh_color = UIColor.red
-        mm.textLayout = LHTextLayout.layout(size: CGSize.init(width: 80, height: 100), text: att)
+        att.lh_lineSpacing = 20
+        att.insert(image: UIImage.init(named: "buffer"), frame: CGRect.init(x: 0, y: 0, width: 60, height: 60), index: 0)
+        mm.textLayout = LHTextLayout.layout(size: CGSize.init(width: 200, height: 100000), text: att)
+        mm.sizeToFit()
         return
         
         

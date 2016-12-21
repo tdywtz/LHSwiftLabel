@@ -16,21 +16,36 @@ class LHTextContainer : NSObject {
     var exclusionPaths: [UIBezierPath] = []
     var pathLineWidth: CGFloat = 0
     var maximumNumberOfRows: Int = 1
-    
 
-    
+
+
     public override init() {
         super.init()
     }
-    
+
     class  func container(size: CGSize) -> LHTextContainer {
         return self.container(size: size, insets: UIEdgeInsets())
     }
-   
+
     class  func container(size: CGSize, insets: UIEdgeInsets) -> LHTextContainer {
         let container = LHTextContainer.init()
         container.size = size
         container.insets = insets
+        return container
+    }
+
+
+    override func copy() -> Any {
+
+        let container = LHTextContainer.init()
+
+        container.size = size
+        container.insets = insets
+        container.path = path
+        container.exclusionPaths = exclusionPaths
+        container.pathLineWidth = pathLineWidth
+        container.maximumNumberOfRows = maximumNumberOfRows
+
         return container
     }
 }
@@ -40,193 +55,182 @@ class LHTextLayout: NSObject {
     private var _textContainer = LHTextContainer()
     private var _attributedText = NSAttributedString()
     private var _range = NSRange()
-    private var _bounds = CGRect()
+    private var _textSize = CGSize()
     private var _textRect = CGRect()
     private var _textInsets = UIEdgeInsets()
     private var _frame: CTFrame?
     private var _framesetter: CTFramesetter?
-    
+
     var textContainer: LHTextContainer {
         return _textContainer
     }
-    
+
     var attributedText: NSAttributedString {
         return _attributedText
     }
-    
+
     var range: NSRange {
         return _range
     }
-    
-    var bounds: CGRect {
-        return _bounds
+
+    var textSize: CGSize {
+        return _textSize
     }
-    
+
     var textRect: CGRect {
         return _textRect
     }
-    
+
     var textInsets: UIEdgeInsets{
         return _textInsets
     }
-    
+
     var frame: CTFrame?{
         return _frame
     }
-    
+
     var framesetter:CTFramesetter?{
         return _framesetter
     }
-    
+
 
     var numberOfLines: UInt = 0
-    
+
     class  func layout(size: CGSize, text: NSAttributedString) -> LHTextLayout {
         let container = LHTextContainer.container(size: size)
         return self.layout(container: container, text: text, range: NSMakeRange(0, text.length))
     }
-    
+
     class  func layout(container: LHTextContainer, text: NSAttributedString) -> LHTextLayout {
-      return self.layout(container: container, text: text, range: NSMakeRange(0, text.length))
+        return self.layout(container: container, text: text, range: NSMakeRange(0, text.length))
     }
 
     class  func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) -> LHTextLayout {
-        
-        
+
+        var rect = CGRect.zero
+        var cgPath:CGPath?
+        var cgPathBox = CGRect.zero
+        let frameAttrs = NSMutableDictionary()
+        var ctSetter:CTFramesetter?
+        var ctFrame: CTFrame?
+        var ctLines: CFArray?
+        var lineOrigins: UnsafeMutablePointer<CGPoint>?
+        var lineCount = Int(0)
+        var lines = NSMutableArray()
+        var maximumNumberOfRows: Int = 0
+
+        let text = text.copy() as! NSAttributedString
+        let container = container.copy() as! LHTextContainer
+
+        if range.length + range.location > text.length { return LHTextLayout() }
+
         let layout = LHTextLayout.init()
         layout._attributedText = text
         layout._textContainer = container
         layout._range = range
-        
-        var rect = CGRect.init(origin: CGPoint(), size: container.size)
+
+        rect = CGRect.init(origin: CGPoint(), size: container.size)
         rect = UIEdgeInsetsInsetRect(rect, container.insets)
         rect =  rect.standardized
-        
+        cgPathBox = rect;
         rect = rect.applying(CGAffineTransform.init(scaleX: 1, y: -1))
-        let cgPath = CGPath.init(rect: rect, transform: nil)
-        
-        let att = NSMutableDictionary()
-        att[kCTFrameProgressionAttributeName] = (CTFrameProgression.rightToLeft.hashValue)
-        att[kCTFramePathWidthAttributeName] = (0n)
-        att[kCTFramePathFillRuleAttributeName] = (CTFramePathFillRule.windingNumber.hashValue)
-        
-        layout._framesetter = CTFramesetterCreateWithAttributedString(text as CFAttributedString)
-       
-        layout._frame = CTFramesetterCreateFrame(layout._framesetter!, CFRangeMake(0, CFIndex(text.length)), cgPath, att)
-        
-    
+        cgPath = CGPath.init(rect: rect, transform: nil)
+
+
+        //        frameAttrs[kCTFrameProgressionAttributeName] = (CTFrameProgression.rightToLeft.hashValue)
+        //        frameAttrs[kCTFramePathWidthAttributeName] = (0)
+        //        frameAttrs[kCTFramePathFillRuleAttributeName] = (CTFramePathFillRule.windingNumber.hashValue)
+
+        ctSetter = CTFramesetterCreateWithAttributedString(text as CFAttributedString)
+
+        ctFrame = CTFramesetterCreateFrame(ctSetter!, CFRangeMake(0, CFIndex(text.length)), cgPath!, frameAttrs)
+
+        ctLines = CTFrameGetLines(ctFrame!)
+        lineCount = CFArrayGetCount(ctLines!)
+        if lineCount > 0 {
+            lineOrigins = UnsafeMutablePointer<CGPoint>.allocate(capacity: lineCount)
+            CTFrameGetLineOrigins(ctFrame!, CFRange.init(), lineOrigins)
+        }
+
+        var textBoundingRect = CGRect.zero
+        var textBoundingSize = CGSize.zero
+        var rowIdx: Int = -1
+        var rowCount: uint = 0
+        var lastRect = CGRect.init(x: 0, y: -Int.max, width: 0, height: 0)
+        var lastPosition = CGPoint.init(x: 0, y: -Int.max)
+        var lineCurrentIdx: uint = 0
+
+        for i in 0 ..< lineCount {
+            let ctLine = Unmanaged<AnyObject>.fromOpaque(CFArrayGetValueAtIndex(ctLines, i)).takeUnretainedValue() as! CTLine
+            let ctRuns = CTLineGetGlyphRuns(ctLine)
+            if  CFArrayGetCount(ctRuns) == 0 { continue }
+
+            let ctLineOrigin = lineOrigins![i]
+            var position = CGPoint.zero
+
+            position.x =  cgPathBox.origin.x + ctLineOrigin.x
+            position.y = cgPathBox.size.height + cgPathBox.origin.y - ctLineOrigin.y
+
+            ///
+            var ascent: CGFloat = 0
+            var descent: CGFloat = 0
+            var leading: CGFloat = 0
+
+            let width =  CTLineGetTypographicBounds(ctLine, &ascent, &descent, &leading)
+            let rect = CGRect.init(origin: position, size: CGSize.init(width: CGFloat(width), height: ascent+descent))
+
+
+
+
+            var newRow = true
+            if (rect.size.height > lastRect.size.height) {
+                if (rect.origin.y < lastPosition.y && lastPosition.y < rect.origin.y + rect.size.height){
+                    newRow = false
+                }
+            } else {
+                if (lastRect.origin.y < position.y && position.y < lastRect.origin.y + lastRect.size.height){
+                    newRow = false
+                }
+            }
+
+            if (newRow){
+                rowIdx += 1
+            }
+            lastRect = rect;
+            lastPosition = position;
+            rowCount += 1
+            lineCurrentIdx += 1
+            if (i == 0){
+                textBoundingRect = rect
+            }else {
+                if (maximumNumberOfRows == 0 || rowIdx < maximumNumberOfRows) {
+                    textBoundingRect = rect.union(textBoundingRect)
+                }
+            }
+        }
+
+        textBoundingSize = textBoundingRect.size
+        layout._framesetter = ctSetter
+        layout._frame = ctFrame
+        layout._textRect = textBoundingRect
+        layout._textSize = textBoundingSize
+        if lineOrigins != nil {
+            free(lineOrigins)
+        }
+
         return layout
     }
-    
-    
+
+
     public override init(){
         super.init()
     }
 
-//
-//    func framesetter(attributed: NSAttributedString) -> CTFramesetter {
-//
-//        let cfattributed = attributed as CFAttributedString
-//        let framesetter =  CTFramesetterCreateWithAttributedString(cfattributed);
-//
-//        return framesetter
-//    }
+    func draw(context: CGContext, rect: CGRect, point:CGPoint) {
 
-//    func suggestFrameSize(attributed: NSAttributedString, size: CGSize, numberOfLines:UInt) -> CGSize {
-//        let cfattributed = attributed as CFAttributedString
-//
-//        let framesetter =  CTFramesetterCreateWithAttributedString(cfattributed);
-//        var rangeToSize = CFRangeMake(0, CFAttributedStringGetLength(cfattributed))
-//
-//        if numberOfLines > 0 {
-//            let rect = CGRect.init(origin: CGPoint.init(), size: size)
-//            let range = CFRange.init(location: 0, length: 0)
-//            let frame = self.textFrame(framesetter: framesetter, rect: rect, range: range)
-//            let lines = CTFrameGetLines(frame)
-//
-//            if CFArrayGetCount(lines) > 0 {
-//                let lastVisibleLineIndex = min(CFIndex(numberOfLines), CFArrayGetCount(lines))
-//                let lastVisibleLine = CFArrayGetValueAtIndex(lines, lastVisibleLineIndex-1)
-//
-//                let line: CTLine =  Unmanaged<AnyObject>.fromOpaque(lastVisibleLine!).takeUnretainedValue() as! CTLine
-//
-//                let rangeToLayout = CTLineGetStringRange(line)
-//                rangeToSize = CFRange.init(location: 0, length: rangeToLayout.location + rangeToLayout.length)
-//            }
-//
-//        }
-//        let suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, rangeToSize, nil, size, nil)
-//        return suggestedSize
-//    }
-
-    func textFrame(framesetter: CTFramesetter, rect: CGRect, range: CFRange) -> CTFrame? {
-        let path = CGMutablePath.init()
-        path.addRect(rect)
-     
-
-
-    
-        let rotateCharset = self.VerticalFormRotateCharacterSet()
-        let rotateMoveCharset = self.VerticalFormRotateAndMoveCharacterSet()
-
-
-        //        let lines =  CTFrameGetLines(frame)
-        //        for i in 0..<CFArrayGetCount(lines) {
-        //
-        //           let lineSafeRawPointer = CFArrayGetValueAtIndex(lines, i)
-        //           let line: CTLine =  Unmanaged<AnyObject>.fromOpaque(lineSafeRawPointer!).takeUnretainedValue() as! CTLine
-        //            let runs = CTLineGetGlyphRuns(line)
-        //            for j in 0..<CFArrayGetCount(runs) {
-        //                let runSafeRawPointer = CFArrayGetValueAtIndex(runs, j)
-        //                let run: CTRun =  Unmanaged<AnyObject>.fromOpaque(runSafeRawPointer!).takeUnretainedValue() as! CTRun
-        //
-        //                let  glyphCount = CTRunGetGlyphCount(run)
-        //                if glyphCount == 0 {
-        //                    continue
-        //                }
-        //
-        //                let runStrIdx = UnsafeMutablePointer<CFIndex>.allocate(capacity: glyphCount + 1)
-        //            CTRunGetStringIndices(run, CFRangeMake(0, 0), runStrIdx)
-        //                let  runStrRange =  CTRunGetStringRange(run)
-        //                runStrIdx[glyphCount] =  runStrRange.location + runStrRange.length
-        //            let runAttrs = CTRunGetAttributes(run)
-        //            var keyPointer = kCTFontAttributeName
-        //                let layoutStr: NSString = self.attributedText!.string as! NSString
-        //
-        //
-        //                for g in 0..<glyphCount {
-        //                    var glyphRotate = false
-        //                    var glyphRotateMove = false
-        //                    let runStrLen = runStrIdx[g + 1] - runStrIdx[g]
-        //                    if runStrLen == 1 {
-        //                        let c: unichar = layoutStr.character(at: runStrIdx[g])
-        //                        glyphRotate = rotateCharset.characterIsMember(c)
-        //                        if glyphRotate == true {
-        //                            glyphRotateMove = rotateMoveCharset.characterIsMember(c)
-        //                        }
-        //                    }else if (runStrLen > 1){
-        //                        let glyphStr = layoutStr.substring(with: NSMakeRange(runStrIdx[g], runStrLen))
-        //                       let ra = glyphStr.rangeOfCharacter(from: rotateCharset as CharacterSet)
-        //                       // glyphRotate = ra.
-        //
-        //                    }
-        //
-        //                }
-        //            }
-        //
-        //        }
-        //
-        //        self.attributedText?.enumerateAttributes(in: NSMakeRange(0, self.attributedText!.length), options: .longestEffectiveRangeNotRequired, using: { (_: [String : Any],_: NSRange, _: UnsafeMutablePointer<ObjCBool>) in
-        //
-        //        })
-        return nil
-    }
-
-    func draw(context: CGContext, size: CGSize, point:CGPoint) {
-        
         CTFrameDraw(self.frame!, context)
     }
-    
+
     func draw(context: CGContext, run: CTRun) {
 
     }
@@ -264,7 +268,7 @@ class LHTextLayout: NSObject {
         set.addCharacters(in: NSMakeRange(0xFF00, 240))// Halfwidth and Fullwidth Forms
         set.addCharacters(in: NSMakeRange(0x1F200, 256))// Enclosed Ideographic Supplement
         set.addCharacters(in: NSMakeRange(0x1F300, 768))// Enclosed Ideographic Supplement
-        
+
         set.addCharacters(in: NSMakeRange(0x1F600, 80))// Emoticons (Emoji)
         set.addCharacters(in: NSMakeRange(0x1F680, 128))// Transport and Map Symbols
         // See http://unicode-table.com/ for more information.

@@ -13,6 +13,7 @@ class MMLabel: UIView {
     var textLayout = LHTextLayout(){
         didSet{
             setNeedsDisplay()
+
         }
     }
     
@@ -26,12 +27,22 @@ class MMLabel: UIView {
         super.init(coder: aDecoder)
     }
 
+    // MARK: - Auto layout
+    open override var intrinsicContentSize: CGSize {
+
+        return textLayout.textSize
+    }
+
+    open override func sizeThatFits(_ size: CGSize) -> CGSize {
+        return textLayout.textSize
+    }
    
     override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()
         context?.scaleBy(x: 1, y: -1)
-       // context?.translateBy(x: 0, y: rect.height)
-        textLayout.draw(context: context!, size: rect.size, point: CGPoint.init())
+        // context?.translateBy(x: 0, y: rect.height)
+        textLayout.draw(context: context!, rect: rect, point: CGPoint.init())
+
     }
 
 }
