@@ -9,6 +9,51 @@
 
 import UIKit
 
+public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
+
+private func generateRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
+   // var d = RunDelegate(image: attachment.image!, font: font)
+    var cbs = CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (p) -> Void in
+       let po =  p.advanced(by: 0)
+      MemoryLayout
+   po.pointee = 0
+    }, getAscent: { (p) -> CGFloat in
+        print(p)
+        print(111)
+       // let d = UnsafeMutablePointer<LHTextAttachment>(p).memory
+        return 10// Error here, EXC_BAD_ACCESS(code = 1)
+    }, getDescent: { (p) -> CGFloat in
+       // let d = UnsafeMutablePointer<LHTextAttachment>(p).memory
+        return 0
+    },getWidth: { (p) -> CGFloat in
+       //z let d = UnsafeMutablePointer<LHTextAttachment>(p).memory
+        return 10
+    })
+    var arr = Array<AnyObject>()
+    return CTRunDelegateCreate(&cbs, &arr)!
+}
+
+class LHTextAttachment: NSObject {
+    class func attchment(content: AnyObject) -> LHTextAttachment {
+        let attchment = LHTextAttachment.init()
+        attchment.content = content
+        return attchment
+    }
+    
+    
+    var content: AnyObject = NSObject()
+    var contentMode: UIViewContentMode = .scaleToFill
+    var contentInsets = UIEdgeInsets.zero
+    var userInfo = NSDictionary()
+    
+}
+
+
+
+
+
+
+
 class LHTextLine: NSObject {
 
     class func line(ctLine: CTLine, position: CGPoint, vertical: Bool) -> LHTextLine {
@@ -17,10 +62,13 @@ class LHTextLine: NSObject {
         line._position = position
         line._vertical = vertical
         line.setting(line: ctLine)
+        generateRunDelegate(attachment: LHTextAttachment.init(), font: UIFont.systemFont(ofSize: 13))
         return line
     }
+    
 
-
+    private var _firstGlyphPos: CGFloat = 0
+    
     private var _ctLine: CTLine?
     private var _vertical = false
     private var _bounds = CGRect.zero
@@ -67,37 +115,55 @@ class LHTextLine: NSObject {
        let width = CTLineGetTypographicBounds(line, &_ascent, &_descent, &_leading)
         _lineWidth = CGFloat(width)
 
+        let range = CTLineGetStringRange(line)
+        
         let ctRuns = CTLineGetGlyphRuns(line)
-        if  CFArrayGetCount(ctRuns) == 0 { continue }
-
+        if CTLineGetGlyphCount(line) > 0 {
+            let runRawPointer = CFArrayGetValueAtIndex(ctRuns, 0)
+            let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
+            let cfAtts =  CTRunGetAttributes(run)
+            var runPosition = CGPoint.zero
+            CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
+            _firstGlyphPos = runPosition.x
+        }
+       reloadBounds()
+    }
+    
+    
+    func reloadBounds() {
+        _bounds = CGRect.init(x: _position.x, y: _position.y + ascent, width: lineWidth, height: _ascent + _descent)
+        _bounds.origin.x = _firstGlyphPos
+        
+        let ctRuns = CTLineGetGlyphRuns(self.ctLine!)
         for k in 0 ..< CFArrayGetCount(ctRuns) {
             let runRawPointer = CFArrayGetValueAtIndex(ctRuns, k)
             let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
-            let cfAtts =  CTRunGetAttributes(run)
-
-            var runPosition = CGPoint.zero
-            CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
-
-            var ascent: CGFloat = 0
-            var descent: CGFloat = 0
-            var leading: CGFloat = 0
-
-
-            let width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading)
-
-            attchmentRect.origin = runPosition
-            attchmentRect.size.width = CGFloat(width)
-            attchmentRect.size.height = ascent + descent
-
-            let atts = cfAtts as NSDictionary
-            let attchment = atts["NSAttachment"]
-            if attchment != nil {
-                attchmentRect.size = (attchment as! NSTextAttachment).bounds.size
-                if ascent < attchmentRect.height {
-                    rect.size.height = attchmentRect.height
-                }
+           
+            let glyphCount = CTRunGetGlyphCount(run)
+            if glyphCount == 0 {
+                continue
             }
+          
+            let attrs =  CTRunGetAttributes(run) as NSDictionary
+            let attachment = attrs[LHTextAttachmentAttributeName] as? NSTextAttachment
+            if attachment != nil {
+                var runPosition = CGPoint.zero
+                CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
+                var ascent: CGFloat = 0
+                var descent: CGFloat = 0
+                var leading: CGFloat = 0
+                var runTypoBounds = CGRect()
+                
+                let width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading)
+                runPosition.x += _position.x;
+                runPosition.y = _position.y - runPosition.y;
+                runTypoBounds = CGRect.init(x: runPosition.x, y: runPosition.y - ascent, width: CGFloat(width), height: ascent + descent)
+                
+
+            }
+          
         }
+
     }
 
 }

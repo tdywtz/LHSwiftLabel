@@ -171,6 +171,7 @@ class LHTextLayout: NSObject {
             position.x =  cgPathBox.origin.x + ctLineOrigin.x
             position.y = cgPathBox.size.height + cgPathBox.origin.y - ctLineOrigin.y
 
+            let lhLine = LHTextLine.line(ctLine: ctLine, position: position, vertical: false)
             ///
             var ascent: CGFloat = 0
             var descent: CGFloat = 0

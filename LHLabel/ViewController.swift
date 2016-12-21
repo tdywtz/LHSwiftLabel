@@ -21,7 +21,7 @@ class ViewController: UIViewController, LHLabelDelegate {
         mm.lh_top = 100;
         mm.lh_size = CGSize.init(width: 100, height: 100)
     
-        let att = NSMutableAttributedString.init(string: "奥斯卡东方航空\nsadgdsf")
+        let att = NSMutableAttributedString.init(string: "奥斯卡东方航")
         att.lh_font = UIFont.systemFont(ofSize: 16)
         att.lh_color = UIColor.red
         att.lh_lineSpacing = 20
