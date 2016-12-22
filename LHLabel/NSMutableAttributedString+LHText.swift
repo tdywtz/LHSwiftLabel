@@ -29,6 +29,7 @@
 //* 21. NSAttachmentAttributeName ->设置文本附件,取值为NSTextAttachment对象,常用于文字图片混排
 import UIKit
 
+
 //MARK:
 extension NSMutableAttributedString{
 
@@ -639,6 +640,18 @@ extension NSMutableAttributedString {
 
 //MARK:添加图片
 extension NSMutableAttributedString{
+    
+    class func attribute(attchment: LHTextAttachment) -> NSMutableAttributedString {
+        
+        var objectReplacementChar:unichar           = 0xFFFC;
+        let objectReplacementString = NSString.init(characters: &objectReplacementChar, length: 1)
+        let att = NSMutableAttributedString.init(string: objectReplacementString as String)
+        
+        let delegate = getRunDelegate(attachment: attchment, font: UIFont.systemFont(ofSize: 11))
+        att.addAttribute(kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
+        return att
+    }
+    
     func add(image: UIImage?, frame: CGRect, range: NSRange) -> Void {
         let attribute = self.attribute(image: image, frame: frame)
         self.replaceCharacters(in: range, with: attribute)
@@ -659,24 +672,8 @@ extension NSMutableAttributedString{
 
     func attribute(image: UIImage?, frame: CGRect) -> NSAttributedString {
 
-        var objectReplacementChar:unichar           = 0xFFFC;
-        let objectReplacementString = NSString.init(characters: &objectReplacementChar, length: 1)
-        let att = NSMutableAttributedString.init(string: objectReplacementString as String)
-
         let ac = LHTextAttachment.attchment(content: image!)
-
-        let delegate = getRunDelegate(attachment: ac, font: UIFont.systemFont(ofSize: 11))
-         att.addAttribute(kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
-        return att
-
-        let attachment = NSTextAttachment.init()
-        attachment.image = image
-        attachment.bounds = frame
-        let attributed = NSAttributedString.init(attachment: attachment)
-
-        let matt = NSMutableAttributedString.init(attributedString: attributed)
-        matt.lh_font = UIFont.systemFont(ofSize: 1)
-        return matt
+        return NSMutableAttributedString.attribute(attchment: ac)
     }
 
 }
@@ -694,13 +691,13 @@ func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate
             print(image)
            // return image.size.height
         }
-        return 50
+        return 30
     }, getDescent: { (refCon) -> CGFloat in
 
         return 0
     },getWidth: { (refCon) -> CGFloat in
 
-        return 30 
+        return 50
     })
 
     let a = UnsafeMutableRawPointer.allocate(bytes: 0, alignedTo: 0)

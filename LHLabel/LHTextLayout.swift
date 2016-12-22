@@ -60,6 +60,7 @@ class LHTextLayout: NSObject {
     private var _textInsets = UIEdgeInsets()
     private var _frame: CTFrame?
     private var _framesetter: CTFramesetter?
+    private var _lines = Array<LHTextLine>()
 
     var textContainer: LHTextContainer {
         return _textContainer
@@ -92,6 +93,11 @@ class LHTextLayout: NSObject {
     var framesetter:CTFramesetter?{
         return _framesetter
     }
+    
+    var lines: Array<LHTextLine> {
+        return _lines
+    }
+    
 
 
     var numberOfLines: UInt = 0
@@ -116,7 +122,7 @@ class LHTextLayout: NSObject {
         var ctLines: CFArray?
         var lineOrigins: UnsafeMutablePointer<CGPoint>?
         var lineCount = Int(0)
-        var lines = NSMutableArray()
+        var lines = Array<LHTextLine>()
         var maximumNumberOfRows: Int = 0
 
         let text = text.copy() as! NSAttributedString
@@ -172,24 +178,12 @@ class LHTextLayout: NSObject {
             position.y = cgPathBox.size.height + cgPathBox.origin.y - ctLineOrigin.y
 
             let lhLine = LHTextLine.line(ctLine: ctLine, position: position, vertical: false)
-            ///
-            var ascent: CGFloat = 0
-            var descent: CGFloat = 0
-            var leading: CGFloat = 0
+            lines.append(lhLine)
+            print(lhLine.ascent)
+            print(lhLine.descent)
+            print(lhLine.bounds)
 
-            let width =  CTLineGetTypographicBounds(ctLine, &ascent, &descent, &leading)
-            let rect = CGRect.init(origin: position, size: CGSize.init(width: CGFloat(width), height: ascent+descent))
-
-//
-//            for k in 0 ..< CFArrayGetCount(ctRuns) {
-//                let runRawPointer = CFArrayGetValueAtIndex(ctRuns, k)
-//                let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
-//                let cfAtts =  CTRunGetAttributes(run)
-//
-//                print(cfAtts)
-//            }
-
-
+            let rect = lhLine.bounds
 
             var newRow = true
             if (rect.size.height > lastRect.size.height) {
@@ -214,16 +208,18 @@ class LHTextLayout: NSObject {
             }else {
                 if (maximumNumberOfRows == 0 || rowIdx < maximumNumberOfRows) {
                     textBoundingRect = rect.union(textBoundingRect)
+                    
                 }
             }
         }
-
-        
+       
         textBoundingSize = textBoundingRect.size
+      
         layout._framesetter = ctSetter
         layout._frame = ctFrame
         layout._textRect = textBoundingRect
         layout._textSize = textBoundingSize
+        layout._lines = lines
         if lineOrigins != nil {
             free(lineOrigins)
         }
@@ -237,12 +233,52 @@ class LHTextLayout: NSObject {
     }
 
     func draw(context: CGContext, rect: CGRect, point:CGPoint) {
+      self.drawText(layout: self, context: context, size: rect.size, point: point)
+      
+    }
+    
+    func drawText(layout: LHTextLayout, context: CGContext, size: CGSize, point: CGPoint) {
+        context.saveGState()
+        
+        context.scaleBy(x: 1, y: -1)
+        context.translateBy(x: 0, y: -size.height)
+        context.textPosition = point
+        
+        let lines = layout.lines
+        for i in 0 ..< lines.count {
+            let line = lines[i]
+            let posX = line.position.x
+            let posY = size.height - line.position.y
+            
+            let ctRuns = CTLineGetGlyphRuns(line.ctLine!)
+            for k in 0 ..< CFArrayGetCount(ctRuns) {
+                let runRawPointer = CFArrayGetValueAtIndex(ctRuns, k)
+                let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
+                context.textMatrix = CGAffineTransform.identity
+                context.textPosition = CGPoint.init(x: posX, y: posY)
+               
+                self.drawRun(context: context, line: line, run: run, size: size)
 
-        CTFrameDraw(self.frame!, context)
+            }
+            
+        }
+        
+        context.restoreGState()
     }
 
-    func draw(context: CGContext, run: CTRun) {
-
+    func drawRun(context: CGContext, line: LHTextLine, run: CTRun, size: CGSize) {
+        let runTextMatrix = CTRunGetTextMatrix(run)
+        let attrs =  CTRunGetAttributes(run) as NSDictionary
+     //   let attachment = attrs[LHTextAttachmentAttributeName] as? NSTextAttachment
+//        if runTextMatrix == nil {
+//            context.saveGState()
+//          context.textMatrix = context.textMatrix.concatenating(runTextMatrix)
+//        }
+//        
+        CTRunDraw(run, context, CFRangeMake(0, 0))
+//        if runTextMatrix == nil {
+//            context.restoreGState()
+//        }
     }
 
 

@@ -39,8 +39,7 @@ class MMLabel: UIView {
    
     override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()
-        context?.scaleBy(x: 1, y: -1)
-        // context?.translateBy(x: 0, y: rect.height)
+     
         textLayout.draw(context: context!, rect: rect, point: CGPoint.init())
 
     }
