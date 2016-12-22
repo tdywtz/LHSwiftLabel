@@ -9,38 +9,21 @@
 
 import UIKit
 
-public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
 
-private func generateRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
-   // var d = RunDelegate(image: attachment.image!, font: font)
-    var cbs = CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (p) -> Void in
-       let po =  p.advanced(by: 0)
-      MemoryLayout
-   po.pointee = 0
-    }, getAscent: { (p) -> CGFloat in
-        print(p)
-        print(111)
-       // let d = UnsafeMutablePointer<LHTextAttachment>(p).memory
-        return 10// Error here, EXC_BAD_ACCESS(code = 1)
-    }, getDescent: { (p) -> CGFloat in
-       // let d = UnsafeMutablePointer<LHTextAttachment>(p).memory
-        return 0
-    },getWidth: { (p) -> CGFloat in
-       //z let d = UnsafeMutablePointer<LHTextAttachment>(p).memory
-        return 10
-    })
-    var arr = Array<AnyObject>()
-    return CTRunDelegateCreate(&cbs, &arr)!
-}
+
+
+
 
 class LHTextAttachment: NSObject {
     class func attchment(content: AnyObject) -> LHTextAttachment {
         let attchment = LHTextAttachment.init()
         attchment.content = content
+
         return attchment
     }
-    
-    
+
+
+
     var content: AnyObject = NSObject()
     var contentMode: UIViewContentMode = .scaleToFill
     var contentInsets = UIEdgeInsets.zero
@@ -62,7 +45,7 @@ class LHTextLine: NSObject {
         line._position = position
         line._vertical = vertical
         line.setting(line: ctLine)
-        generateRunDelegate(attachment: LHTextAttachment.init(), font: UIFont.systemFont(ofSize: 13))
+
         return line
     }
     
@@ -118,10 +101,12 @@ class LHTextLine: NSObject {
         let range = CTLineGetStringRange(line)
         
         let ctRuns = CTLineGetGlyphRuns(line)
+
         if CTLineGetGlyphCount(line) > 0 {
             let runRawPointer = CFArrayGetValueAtIndex(ctRuns, 0)
             let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
             let cfAtts =  CTRunGetAttributes(run)
+
             var runPosition = CGPoint.zero
             CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
             _firstGlyphPos = runPosition.x
@@ -138,7 +123,7 @@ class LHTextLine: NSObject {
         for k in 0 ..< CFArrayGetCount(ctRuns) {
             let runRawPointer = CFArrayGetValueAtIndex(ctRuns, k)
             let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
-           
+
             let glyphCount = CTRunGetGlyphCount(run)
             if glyphCount == 0 {
                 continue
@@ -159,7 +144,6 @@ class LHTextLine: NSObject {
                 runPosition.y = _position.y - runPosition.y;
                 runTypoBounds = CGRect.init(x: runPosition.x, y: runPosition.y - ascent, width: CGFloat(width), height: ascent + descent)
                 
-
             }
           
         }

@@ -180,6 +180,14 @@ class LHTextLayout: NSObject {
             let width =  CTLineGetTypographicBounds(ctLine, &ascent, &descent, &leading)
             let rect = CGRect.init(origin: position, size: CGSize.init(width: CGFloat(width), height: ascent+descent))
 
+//
+//            for k in 0 ..< CFArrayGetCount(ctRuns) {
+//                let runRawPointer = CFArrayGetValueAtIndex(ctRuns, k)
+//                let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
+//                let cfAtts =  CTRunGetAttributes(run)
+//
+//                print(cfAtts)
+//            }
 
 
 
@@ -210,6 +218,7 @@ class LHTextLayout: NSObject {
             }
         }
 
+        
         textBoundingSize = textBoundingRect.size
         layout._framesetter = ctSetter
         layout._frame = ctFrame

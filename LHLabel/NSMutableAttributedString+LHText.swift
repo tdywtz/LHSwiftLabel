@@ -658,6 +658,17 @@ extension NSMutableAttributedString{
     }
 
     func attribute(image: UIImage?, frame: CGRect) -> NSAttributedString {
+
+        var objectReplacementChar:unichar           = 0xFFFC;
+        let objectReplacementString = NSString.init(characters: &objectReplacementChar, length: 1)
+        let att = NSMutableAttributedString.init(string: objectReplacementString as String)
+
+        let ac = LHTextAttachment.attchment(content: image!)
+
+        let delegate = getRunDelegate(attachment: ac, font: UIFont.systemFont(ofSize: 11))
+         att.addAttribute(kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
+        return att
+
         let attachment = NSTextAttachment.init()
         attachment.image = image
         attachment.bounds = frame
@@ -667,4 +678,34 @@ extension NSMutableAttributedString{
         matt.lh_font = UIFont.systemFont(ofSize: 1)
         return matt
     }
+
 }
+
+public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
+
+func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
+    var cbs = CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (refCon) -> Void in
+
+    }, getAscent: { (refCon) -> CGFloat in
+        let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
+        let r = a.pointee
+        if r.content.isKind(of: UIImage.classForCoder()){
+            let image = r.content as! UIImage
+            print(image)
+           // return image.size.height
+        }
+        return 50
+    }, getDescent: { (refCon) -> CGFloat in
+
+        return 0
+    },getWidth: { (refCon) -> CGFloat in
+
+        return 30 
+    })
+
+    let a = UnsafeMutableRawPointer.allocate(bytes: 0, alignedTo: 0)
+    a.initializeMemory(as: LHTextAttachment.self, to: attachment)
+    return CTRunDelegateCreate(&cbs, a)!
+}
+
+

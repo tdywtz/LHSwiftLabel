@@ -25,7 +25,7 @@ class ViewController: UIViewController, LHLabelDelegate {
         att.lh_font = UIFont.systemFont(ofSize: 16)
         att.lh_color = UIColor.red
         att.lh_lineSpacing = 20
-        att.insert(image: UIImage.init(named: "buffer"), frame: CGRect.init(x: 0, y: 0, width: 60, height: 60), index: 0)
+        att.insert(image: UIImage.init(named: "buffer"), frame: CGRect.init(x: 0, y: 0, width: 60, height: 60), index: 2)
         mm.textLayout = LHTextLayout.layout(size: CGSize.init(width: 200, height: 100000), text: att)
         mm.sizeToFit()
         return
