@@ -128,10 +128,13 @@ class LHTextLine: NSObject {
             if glyphCount == 0 {
                 continue
             }
-          
+    
             let attrs =  CTRunGetAttributes(run) as NSDictionary
-            let attachment = attrs[LHTextAttachmentAttributeName] as? NSTextAttachment
-            if attachment != nil {
+            let value = attrs["CTRunDelegate"]
+           
+            if value != nil {
+                let attachment = value as! CTRunDelegate
+                
                 var runPosition = CGPoint.zero
                 CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
                 var ascent: CGFloat = 0
@@ -140,6 +143,7 @@ class LHTextLine: NSObject {
                 var runTypoBounds = CGRect()
                 
                 let width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading)
+               print(_ascent)
                 runPosition.x += _position.x;
                 runPosition.y = _position.y - runPosition.y;
                 runTypoBounds = CGRect.init(x: runPosition.x, y: runPosition.y - ascent, width: CGFloat(width), height: ascent + descent)

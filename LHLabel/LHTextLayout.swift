@@ -123,7 +123,7 @@ class LHTextLayout: NSObject {
         var lineOrigins: UnsafeMutablePointer<CGPoint>?
         var lineCount = Int(0)
         var lines = Array<LHTextLine>()
-        var maximumNumberOfRows: Int = 0
+        var maximumNumberOfRows: Int = 20
 
         let text = text.copy() as! NSAttributedString
         let container = container.copy() as! LHTextContainer
@@ -179,8 +179,7 @@ class LHTextLayout: NSObject {
 
             let lhLine = LHTextLine.line(ctLine: ctLine, position: position, vertical: false)
             lines.append(lhLine)
-            print(lhLine.ascent)
-            print(lhLine.descent)
+          
             print(lhLine.bounds)
 
             let rect = lhLine.bounds
@@ -208,7 +207,10 @@ class LHTextLayout: NSObject {
             }else {
                 if (maximumNumberOfRows == 0 || rowIdx < maximumNumberOfRows) {
                     textBoundingRect = rect.union(textBoundingRect)
-                    
+                    if rect.maxX > textBoundingRect.width {
+                        textBoundingRect.size.width = rect.maxX
+                    }
+                    textBoundingRect.size.height = rect.maxY - lines[0].bounds.origin.y
                 }
             }
         }

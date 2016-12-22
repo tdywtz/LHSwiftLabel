@@ -688,10 +688,10 @@ func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate
         let r = a.pointee
         if r.content.isKind(of: UIImage.classForCoder()){
             let image = r.content as! UIImage
-            print(image)
+            
            // return image.size.height
         }
-        return 30
+        return 0
     }, getDescent: { (refCon) -> CGFloat in
 
         return 0
