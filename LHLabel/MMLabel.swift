@@ -13,7 +13,6 @@ class MMLabel: UIView {
     var textLayout = LHTextLayout(){
         didSet{
             setNeedsDisplay()
-
         }
     }
     
@@ -30,18 +29,22 @@ class MMLabel: UIView {
     // MARK: - Auto layout
     open override var intrinsicContentSize: CGSize {
 
-        return textLayout.textSize
+        return textLayout.textBoundingRect.size
     }
 
     open override func sizeThatFits(_ size: CGSize) -> CGSize {
-        return textLayout.textSize
+        return textLayout.textBoundingRect.size
     }
    
     override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()
-     
-        textLayout.draw(context: context!, rect: rect, point: CGPoint.init())
-
+        if context != nil {
+            var point = CGPoint.zero
+            if textLayout.textBoundingRect.height < rect.height {
+                point.y = (rect.height - textLayout.textBoundingRect.height)/2
+            }
+          textLayout.draw(context: context!, rect: rect, point: point, targetView: self, targetLayer: self.layer)
+        }
     }
 
 }

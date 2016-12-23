@@ -15,7 +15,7 @@ class LHTextContainer : NSObject {
     var path = UIBezierPath()
     var exclusionPaths: [UIBezierPath] = []
     var pathLineWidth: CGFloat = 0
-    var maximumNumberOfRows: Int = 1
+    var maximumNumberOfRows: Int = 0
 
 
 
@@ -55,12 +55,13 @@ class LHTextLayout: NSObject {
     private var _textContainer = LHTextContainer()
     private var _attributedText = NSAttributedString()
     private var _range = NSRange()
-    private var _textSize = CGSize()
-    private var _textRect = CGRect()
+    private var _textBoundingRect = CGRect()
     private var _textInsets = UIEdgeInsets()
     private var _frame: CTFrame?
     private var _framesetter: CTFramesetter?
     private var _lines = Array<LHTextLine>()
+    private var _isTruncation = false
+    private var maximumNumberOfRows: Int = 0
 
     var textContainer: LHTextContainer {
         return _textContainer
@@ -74,12 +75,8 @@ class LHTextLayout: NSObject {
         return _range
     }
 
-    var textSize: CGSize {
-        return _textSize
-    }
-
-    var textRect: CGRect {
-        return _textRect
+    var textBoundingRect: CGRect {
+        return _textBoundingRect
     }
 
     var textInsets: UIEdgeInsets{
@@ -97,10 +94,10 @@ class LHTextLayout: NSObject {
     var lines: Array<LHTextLine> {
         return _lines
     }
-    
 
-
-    var numberOfLines: UInt = 0
+    var isTruncation: Bool {
+        return _isTruncation
+    }
 
     class  func layout(size: CGSize, text: NSAttributedString) -> LHTextLayout {
         let container = LHTextContainer.container(size: size)
@@ -123,24 +120,47 @@ class LHTextLayout: NSObject {
         var lineOrigins: UnsafeMutablePointer<CGPoint>?
         var lineCount = Int(0)
         var lines = Array<LHTextLine>()
-        var maximumNumberOfRows: Int = 20
+        var isTruncation = false
+
+        let maximumNumberOfRows: Int = container.maximumNumberOfRows
 
         let text = text.copy() as! NSAttributedString
         let container = container.copy() as! LHTextContainer
 
         if range.length + range.location > text.length { return LHTextLayout() }
 
-        let layout = LHTextLayout.init()
-        layout._attributedText = text
-        layout._textContainer = container
-        layout._range = range
 
-        rect = CGRect.init(origin: CGPoint(), size: container.size)
-        rect = UIEdgeInsetsInsetRect(rect, container.insets)
-        rect =  rect.standardized
-        cgPathBox = rect;
-        rect = rect.applying(CGAffineTransform.init(scaleX: 1, y: -1))
-        cgPath = CGPath.init(rect: rect, transform: nil)
+        if container.exclusionPaths.count == 0{
+            rect = CGRect.init(origin: CGPoint(), size: container.size)
+            rect = UIEdgeInsetsInsetRect(rect, container.insets)
+            rect =  rect.standardized
+            cgPathBox = rect;
+            rect = rect.applying(CGAffineTransform.init(scaleX: 1, y: -1))
+            cgPath = CGPath.init(rect: rect, transform: nil)
+
+        }else{
+            let mpath: CGMutablePath?
+            rect = CGRect.init(origin: CGPoint(), size: container.size)
+            rect = UIEdgeInsetsInsetRect(rect, container.insets)
+            let rectPath = CGPath.init(rect: rect, transform: nil)
+
+            mpath = rectPath.mutableCopy()
+
+
+            if mpath != nil {
+                for bezierPath in container.exclusionPaths {
+                    mpath!.addPath(bezierPath as! CGPath)
+                }
+                cgPathBox = mpath!.boundingBox
+                let trans = CGAffineTransform.init(scaleX: 1, y: -1)
+                let transPath = CGMutablePath.init()
+                transPath.addPath(mpath!, transform: trans)
+                mpath = transPath
+
+            }
+
+        }
+
 
 
         //        frameAttrs[kCTFrameProgressionAttributeName] = (CTFrameProgression.rightToLeft.hashValue)
@@ -150,7 +170,7 @@ class LHTextLayout: NSObject {
         ctSetter = CTFramesetterCreateWithAttributedString(text as CFAttributedString)
 
         ctFrame = CTFramesetterCreateFrame(ctSetter!, CFRangeMake(0, CFIndex(text.length)), cgPath!, frameAttrs)
-
+        
         ctLines = CTFrameGetLines(ctFrame!)
         lineCount = CFArrayGetCount(ctLines!)
         if lineCount > 0 {
@@ -159,7 +179,6 @@ class LHTextLayout: NSObject {
         }
 
         var textBoundingRect = CGRect.zero
-        var textBoundingSize = CGSize.zero
         var rowIdx: Int = -1
         var rowCount: uint = 0
         var lastRect = CGRect.init(x: 0, y: -Int.max, width: 0, height: 0)
@@ -175,12 +194,10 @@ class LHTextLayout: NSObject {
             var position = CGPoint.zero
 
             position.x =  cgPathBox.origin.x + ctLineOrigin.x
-            position.y = cgPathBox.size.height + cgPathBox.origin.y - ctLineOrigin.y
+            position.y = cgPathBox.size.height - ctLineOrigin.y
 
             let lhLine = LHTextLine.line(ctLine: ctLine, position: position, vertical: false)
             lines.append(lhLine)
-          
-            print(lhLine.bounds)
 
             let rect = lhLine.bounds
 
@@ -207,21 +224,25 @@ class LHTextLayout: NSObject {
             }else {
                 if (maximumNumberOfRows == 0 || rowIdx < maximumNumberOfRows) {
                     textBoundingRect = rect.union(textBoundingRect)
-                    if rect.maxX > textBoundingRect.width {
-                        textBoundingRect.size.width = rect.maxX
-                    }
-                    textBoundingRect.size.height = rect.maxY - lines[0].bounds.origin.y
+                }
+            }
+            if i == lineCount - 1 {
+                if lhLine.range.location + lhLine.range.length < text.length {
+                    isTruncation = true
                 }
             }
         }
-       
-        textBoundingSize = textBoundingRect.size
-      
+
+        let layout = LHTextLayout.init()
+        layout._attributedText = text
+        layout._textContainer = container
+        layout._range = range
         layout._framesetter = ctSetter
         layout._frame = ctFrame
-        layout._textRect = textBoundingRect
-        layout._textSize = textBoundingSize
+        layout._textBoundingRect = textBoundingRect
         layout._lines = lines
+        layout._isTruncation = isTruncation
+
         if lineOrigins != nil {
             free(lineOrigins)
         }
@@ -234,9 +255,9 @@ class LHTextLayout: NSObject {
         super.init()
     }
 
-    func draw(context: CGContext, rect: CGRect, point:CGPoint) {
+    func draw(context: CGContext, rect: CGRect, point:CGPoint, targetView: UIView, targetLayer: CALayer) {
       self.drawText(layout: self, context: context, size: rect.size, point: point)
-      
+      self.drawAttachment(layout: self, context: context, size: rect.size, point: point, targetView: targetView, targetLayer: targetLayer)
     }
     
     func drawText(layout: LHTextLayout, context: CGContext, size: CGSize, point: CGPoint) {
@@ -244,13 +265,13 @@ class LHTextLayout: NSObject {
         
         context.scaleBy(x: 1, y: -1)
         context.translateBy(x: 0, y: -size.height)
-        context.textPosition = point
+     //   context.textPosition = point
         
         let lines = layout.lines
         for i in 0 ..< lines.count {
             let line = lines[i]
             let posX = line.position.x
-            let posY = size.height - line.position.y
+            let posY = (size.height - line.position.y - point.y)
             
             let ctRuns = CTLineGetGlyphRuns(line.ctLine!)
             for k in 0 ..< CFArrayGetCount(ctRuns) {
@@ -269,18 +290,47 @@ class LHTextLayout: NSObject {
     }
 
     func drawRun(context: CGContext, line: LHTextLine, run: CTRun, size: CGSize) {
-        let runTextMatrix = CTRunGetTextMatrix(run)
-        let attrs =  CTRunGetAttributes(run) as NSDictionary
-     //   let attachment = attrs[LHTextAttachmentAttributeName] as? NSTextAttachment
+//        let runTextMatrix = CTRunGetTextMatrix(run)
+//        let attrs =  CTRunGetAttributes(run) as NSDictionary
+//        let attachment = attrs[LHTextAttachmentAttributeName] as? NSTextAttachment
 //        if runTextMatrix == nil {
 //            context.saveGState()
 //          context.textMatrix = context.textMatrix.concatenating(runTextMatrix)
 //        }
-//        
+
         CTRunDraw(run, context, CFRangeMake(0, 0))
 //        if runTextMatrix == nil {
 //            context.restoreGState()
 //        }
+    }
+
+    func drawAttachment(layout: LHTextLayout, context: CGContext, size: CGSize, point: CGPoint, targetView: UIView, targetLayer: CALayer)  {
+        for line in layout.lines {
+            for i in 0 ..< line.attachments.count {
+                let ment = line.attachments[i]
+                let content = ment.content
+                if content == nil {
+                    continue
+                }
+
+                var rect = line.attachmentRects[i]
+                rect = UIEdgeInsetsInsetRect(rect, ment.contentInsets)
+                rect = rect.standardized
+                rect.origin.x += point.x
+                rect.origin.y += point.y
+
+                if content!.isKind(of: UIImage.classForCoder()) {
+                    let cgImage = (ment.content as! UIImage).cgImage
+                    if cgImage != nil {
+                        context.saveGState()
+                        context.translateBy(x: 0, y: rect.maxY + rect.minY)
+                        context.scaleBy(x: 1, y: -1)
+                        context.draw(cgImage!, in: rect)
+                        context.restoreGState()
+                    }
+                }
+            }
+        }
     }
 
 

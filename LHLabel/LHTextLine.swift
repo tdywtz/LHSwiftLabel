@@ -15,19 +15,33 @@ import UIKit
 
 
 class LHTextAttachment: NSObject {
-    class func attchment(content: AnyObject) -> LHTextAttachment {
+    class func attchment(content: AnyObject?) -> LHTextAttachment {
         let attchment = LHTextAttachment.init()
         attchment.content = content
-
         return attchment
     }
 
 
 
-    var content: AnyObject = NSObject()
+    var content: AnyObject?
     var contentMode: UIViewContentMode = .scaleToFill
     var contentInsets = UIEdgeInsets.zero
     var userInfo = NSDictionary()
+    var bounds = CGRect()
+
+
+    var ascent: CGFloat {
+
+         return bounds.height - bounds.origin.y
+    }
+
+    var descent: CGFloat {
+        return bounds.origin.y;
+    }
+
+    var width: CGFloat {
+        return bounds.width
+    }
     
 }
 
@@ -55,12 +69,15 @@ class LHTextLine: NSObject {
     private var _ctLine: CTLine?
     private var _vertical = false
     private var _bounds = CGRect.zero
-
+    private var _range = NSRange()
     private var _position = CGPoint.zero
     private var _ascent: CGFloat = 0
     private var _descent: CGFloat = 0
     private var _leading: CGFloat = 0
     private var _lineWidth: CGFloat = 0
+    private var _attachments = Array<LHTextAttachment>()
+    private var _attachmentRanges = Array<NSRange>()
+    private var _attachmentRects = Array<CGRect>()
 
     var ctLine: CTLine? {
         return _ctLine
@@ -73,6 +90,11 @@ class LHTextLine: NSObject {
     var bounds: CGRect {
         return _bounds
     }
+
+    var range: NSRange {
+        return _range
+    }
+
 
     var position: CGPoint {
         return _position
@@ -93,20 +115,32 @@ class LHTextLine: NSObject {
     var lineWidth: CGFloat {
         return _lineWidth
     }
+
+    var attachments: Array<LHTextAttachment> {
+        return _attachments
+    }
+
+    var attachmentRanges: Array<NSRange> {
+        return _attachmentRanges
+    }
+
+    var attachmentRects: Array<CGRect> {
+        return _attachmentRects
+    }
+
  
     func setting(line: CTLine) {
        let width = CTLineGetTypographicBounds(line, &_ascent, &_descent, &_leading)
         _lineWidth = CGFloat(width)
 
         let range = CTLineGetStringRange(line)
-        
+        _range = NSRange.init(location: range.location, length: range.length)
+
         let ctRuns = CTLineGetGlyphRuns(line)
 
         if CTLineGetGlyphCount(line) > 0 {
             let runRawPointer = CFArrayGetValueAtIndex(ctRuns, 0)
             let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
-            let cfAtts =  CTRunGetAttributes(run)
-
             var runPosition = CGPoint.zero
             CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
             _firstGlyphPos = runPosition.x
@@ -116,10 +150,15 @@ class LHTextLine: NSObject {
     
     
     func reloadBounds() {
-        _bounds = CGRect.init(x: _position.x, y: _position.y + ascent, width: lineWidth, height: _ascent + _descent)
+        _bounds = CGRect.init(x: _position.x, y: _position.y - ascent, width: lineWidth, height: _ascent + _descent)
         _bounds.origin.x = _firstGlyphPos
         
         let ctRuns = CTLineGetGlyphRuns(self.ctLine!)
+
+        var attachments = Array<LHTextAttachment>()
+        var attachmentRanges = Array<NSRange>()
+        var attachmentRects = Array<CGRect>()
+
         for k in 0 ..< CFArrayGetCount(ctRuns) {
             let runRawPointer = CFArrayGetValueAtIndex(ctRuns, k)
             let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
@@ -130,11 +169,10 @@ class LHTextLine: NSObject {
             }
     
             let attrs =  CTRunGetAttributes(run) as NSDictionary
-            let value = attrs["CTRunDelegate"]
+            let attachment = attrs[LHTextAttachmentAttributeName] as? LHTextAttachment
            
-            if value != nil {
-                let attachment = value as! CTRunDelegate
-                
+            if attachment != nil {
+
                 var runPosition = CGPoint.zero
                 CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
                 var ascent: CGFloat = 0
@@ -143,15 +181,23 @@ class LHTextLine: NSObject {
                 var runTypoBounds = CGRect()
                 
                 let width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading)
-               print(_ascent)
+              
                 runPosition.x += _position.x;
                 runPosition.y = _position.y - runPosition.y;
                 runTypoBounds = CGRect.init(x: runPosition.x, y: runPosition.y - ascent, width: CGFloat(width), height: ascent + descent)
-                
+
+                let range =  CTRunGetStringRange(run)
+                let runRange = NSRange.init(location: range.length, length: range.length)
+
+                attachments.append(attachment!);
+                attachmentRanges.append(runRange)
+                attachmentRects.append(runTypoBounds)
             }
           
         }
-
+        _attachments = attachments
+        _attachmentRanges = attachmentRanges
+        _attachmentRects = attachmentRects
     }
 
 }

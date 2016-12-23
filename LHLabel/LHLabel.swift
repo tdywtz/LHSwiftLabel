@@ -193,8 +193,7 @@ open class LHLabel: UILabel {
         var range = NSRange.init()
         let id =  textStorage.attribute(kLHTextRunAttributedName, at: index, effectiveRange: &range)
         if id != nil {
-   let rect = layoutManager.boundingRect(forGlyphRange: range, in: textContainer)
-            print(rect)
+            let rect = layoutManager.boundingRect(forGlyphRange: range, in: textContainer)
             let element = ElementResult(range: range, index: index, value: id!)
             return element
         }

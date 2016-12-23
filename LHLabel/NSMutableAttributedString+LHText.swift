@@ -30,6 +30,35 @@
 import UIKit
 
 
+public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
+
+func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
+
+    var cbs = CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (refCon) -> Void in
+        refCon.deallocate(bytes: 0, alignedTo: 0)
+    }, getAscent: { (refCon) -> CGFloat in
+        let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
+        let r = a.pointee
+        return r.ascent
+
+    }, getDescent: { (refCon) -> CGFloat in
+        let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
+        let r = a.pointee
+        return r.descent
+    },getWidth: { (refCon) -> CGFloat in
+        let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
+        let r = a.pointee
+        return r.width
+    })
+
+    let a = UnsafeMutableRawPointer.allocate(bytes: 0, alignedTo: 0)
+    a.initializeMemory(as: LHTextAttachment.self, to: attachment)
+    //a.deallocate(bytes: 0, alignedTo: 0)
+    return CTRunDelegateCreate(&cbs, a)!
+}
+
+
+
 //MARK:
 extension NSMutableAttributedString{
 
@@ -649,6 +678,8 @@ extension NSMutableAttributedString{
         
         let delegate = getRunDelegate(attachment: attchment, font: UIFont.systemFont(ofSize: 11))
         att.addAttribute(kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
+        att.lh_setAttribute(attributeName: LHTextAttachmentAttributeName, value: attchment, range: NSRange.init(location: 0, length: 1))
+        
         return att
     }
     
@@ -670,39 +701,14 @@ extension NSMutableAttributedString{
 
     }
 
-    func attribute(image: UIImage?, frame: CGRect) -> NSAttributedString {
+    func attribute(image: UIImage?, frame: CGRect) -> NSMutableAttributedString {
 
-        let ac = LHTextAttachment.attchment(content: image!)
+        let ac = LHTextAttachment.attchment(content: image)
+        ac.bounds = frame
         return NSMutableAttributedString.attribute(attchment: ac)
     }
 
 }
 
-public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
-
-func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
-    var cbs = CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (refCon) -> Void in
-
-    }, getAscent: { (refCon) -> CGFloat in
-        let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
-        let r = a.pointee
-        if r.content.isKind(of: UIImage.classForCoder()){
-            let image = r.content as! UIImage
-            
-           // return image.size.height
-        }
-        return 0
-    }, getDescent: { (refCon) -> CGFloat in
-
-        return 0
-    },getWidth: { (refCon) -> CGFloat in
-
-        return 50
-    })
-
-    let a = UnsafeMutableRawPointer.allocate(bytes: 0, alignedTo: 0)
-    a.initializeMemory(as: LHTextAttachment.self, to: attachment)
-    return CTRunDelegateCreate(&cbs, a)!
-}
 
 
