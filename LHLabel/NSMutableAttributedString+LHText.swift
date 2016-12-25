@@ -31,12 +31,14 @@ import UIKit
 
 
 public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
+public let  LHTextTruncationToken = "..."
 
 func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
 
     var cbs = CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (refCon) -> Void in
         refCon.deallocate(bytes: 0, alignedTo: 0)
     }, getAscent: { (refCon) -> CGFloat in
+        
         let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
         let r = a.pointee
         return r.ascent

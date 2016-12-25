@@ -65,7 +65,6 @@ class LHTextLine: NSObject {
     
 
     private var _firstGlyphPos: CGFloat = 0
-    
     private var _ctLine: CTLine?
     private var _vertical = false
     private var _bounds = CGRect.zero
@@ -78,6 +77,8 @@ class LHTextLine: NSObject {
     private var _attachments = Array<LHTextAttachment>()
     private var _attachmentRanges = Array<NSRange>()
     private var _attachmentRects = Array<CGRect>()
+    
+    var row: Int = 0
 
     var ctLine: CTLine? {
         return _ctLine
@@ -150,8 +151,13 @@ class LHTextLine: NSObject {
     
     
     func reloadBounds() {
-        _bounds = CGRect.init(x: _position.x, y: _position.y - ascent, width: lineWidth, height: _ascent + _descent)
-        _bounds.origin.x = _firstGlyphPos
+        if vertical {
+            _bounds = CGRect.init(x: _position.x - _descent, y: _position.y, width: _ascent + _descent, height: _lineWidth)
+        }else {
+            _bounds = CGRect.init(x: _position.x, y: _position.y - ascent, width: lineWidth, height: _ascent + _descent)
+            _bounds.origin.x += _firstGlyphPos
+        }
+       
         
         let ctRuns = CTLineGetGlyphRuns(self.ctLine!)
 
@@ -181,11 +187,17 @@ class LHTextLine: NSObject {
                 var runTypoBounds = CGRect()
                 
                 let width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading)
-              
-                runPosition.x += _position.x;
-                runPosition.y = _position.y - runPosition.y;
-                runTypoBounds = CGRect.init(x: runPosition.x, y: runPosition.y - ascent, width: CGFloat(width), height: ascent + descent)
-
+                
+                if vertical {
+                    runPosition.y = runPosition.x
+                    runPosition.x = _position.y + runPosition.y
+                    runTypoBounds = CGRect.init(x: _position.x + runPosition.x - descent, y: runPosition.y, width: ascent + descent, height: CGFloat(width))
+                    
+                }else {
+                    runPosition.x += _position.x;
+                    runPosition.y = _position.y - runPosition.y;
+                    runTypoBounds = CGRect.init(x: runPosition.x, y: runPosition.y - ascent, width: CGFloat(width), height: ascent + descent)
+                }
                 let range =  CTRunGetStringRange(run)
                 let runRange = NSRange.init(location: range.length, length: range.length)
 

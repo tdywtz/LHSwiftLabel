@@ -12,22 +12,27 @@ class ViewController: UIViewController, LHLabelDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       
         
         let mm = MMLabel.init(frame: self.view.frame)
         self.view.addSubview(mm)
         mm.backgroundColor = UIColor.gray
-        mm.lh_left = 100;
-        mm.lh_top = 100;
-        mm.lh_size = CGSize.init(width: 100, height: 100)
+//        mm.lh_left = 100;
+//        mm.lh_top = 100;
+//        mm.lh_size = CGSize.init(width: 200, height: 200)
     
-        let att = NSMutableAttributedString.init(string: "奥斯卡东方理解的顾客aaaa的分类建立地ddd方记录结果了航")
+        let att = NSMutableAttributedString.init(string: "我自横刀")
         att.lh_font = UIFont.systemFont(ofSize: 16)
-        att.lh_color = UIColor.red
+        att.lh_color = UIColor.white
        // att.lh_lineSpacing = 20
        // att.insert(image: UIImage.init(named: "buffer"), frame: CGRect.init(x: 0, y: -7, width: 60, height: 60), index: 2)
-        mm.textLayout = LHTextLayout.layout(size: CGSize.init(width: 100, height: 100), text: att)
-        mm.sizeToFit()
+        let path = UIBezierPath.init(rect: CGRect.init(x: 30 , y: 30, width: 30, height: 30))
+        let container = LHTextContainer.container(size: CGSize.init(width: 200, height: 200))
+        container.maximumNumberOfRows = 0
+        container.verticalForm = true
+      //  container.exclusionPaths = [path]
+        
+        mm.textLayout = LHTextLayout.layout(container: container, text: att, range: NSRange.init(location: 0, length: att.length))
+      // mm.sizeToFit()
       
         return
         
@@ -76,7 +81,7 @@ class ViewController: UIViewController, LHLabelDelegate {
         label.sizeToFit()
 
      let bool =   RegexParser.emaileResult(text: "12365auto@sina.cn")
-print(bool)
+
 
 
 
