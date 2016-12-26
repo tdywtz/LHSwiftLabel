@@ -99,17 +99,30 @@ class LHTextLayout: NSObject {
     var isTruncation: Bool {
         return _isTruncation
     }
-    
+
+    func update(attributedText: NSAttributedString) {
+        let text = attributedText.copy() as? NSAttributedString
+        if text != nil {
+                _attributedText = text!
+               self.layout(container: self.textContainer, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
+        }
+    }
+
+
+    //MARK: textLayout
     class  func layout(size: CGSize, text: NSAttributedString) -> LHTextLayout {
         let container = LHTextContainer.container(size: size)
-        return self.layout(container: container, text: text, range: NSMakeRange(0, text.length))
+        return self.layout(container: container, text: text)
     }
     
     class  func layout(container: LHTextContainer, text: NSAttributedString) -> LHTextLayout {
-        return self.layout(container: container, text: text, range: NSMakeRange(0, text.length))
+        let layout = LHTextLayout.init()
+         layout.layout(container: container, text: text, range: NSMakeRange(0, text.length))
+
+        return layout
     }
     
-    class  func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) -> LHTextLayout {
+    func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) {
         
         var rect = CGRect.zero
         var cgPath:CGPath?
@@ -129,7 +142,9 @@ class LHTextLayout: NSObject {
         let text = text.copy() as! NSAttributedString
         let container = container.copy() as! LHTextContainer
         
-        if range.length + range.location > text.length { return LHTextLayout() }
+        if range.length + range.location > text.length {
+            return
+        }
         
         
         if container.exclusionPaths.count == 0{
@@ -193,7 +208,6 @@ class LHTextLayout: NSObject {
             lastPosition = CGPoint.init(x: Int.max, y: 0)
         }
         for i in 0 ..< lineCount {
-            
             let ctLine = Unmanaged<AnyObject>.fromOpaque(CFArrayGetValueAtIndex(ctLines, i)).takeUnretainedValue() as! CTLine
             let ctRuns = CTLineGetGlyphRuns(ctLine)
             if  CFArrayGetCount(ctRuns) == 0 { continue }
@@ -202,12 +216,17 @@ class LHTextLayout: NSObject {
             var position = CGPoint.zero
             
             position.x =  cgPathBox.origin.x + ctLineOrigin.x
-            position.y = cgPathBox.size.height - ctLineOrigin.y
-            
+            position.y = cgPathBox.height - ctLineOrigin.y
+
+            if vertical {
+                position.x = -cgPathBox.maxX + cgPathBox.origin.x + ctLineOrigin.x
+            }
+
             let lhLine = LHTextLine.line(ctLine: ctLine, position: position, vertical: vertical)
             lines.append(lhLine)
-            
+
             let rect = lhLine.bounds
+
             if vertical {
                 
             }else {
@@ -254,7 +273,6 @@ class LHTextLayout: NSObject {
                 }
             }
         }
-        
      
         if rowCount > 0 {
             if maximumNumberOfRows > 0 {
@@ -264,7 +282,7 @@ class LHTextLayout: NSObject {
                         if line == nil {
                             break
                         }
-                         if line!.row < rowCount {
+                         if line!.row < maximumNumberOfRows {
                             break
                         }
                         lines.removeLast()
@@ -272,38 +290,43 @@ class LHTextLayout: NSObject {
                 }
             }
         }
-     
-        let lastLine = lines.last!
-        
-        if lastLine.range.location + lastLine.range.length < text.length {
-            isTruncation = true
-            let att = text.attributedSubstring(from: lastLine.range).mutableCopy() as? NSMutableAttributedString
-            if att != nil {
-                
-                att?.replaceCharacters(in: NSRange.init(location: att!.length - 1, length: 1), with: LHTextTruncationToken)
-                
-                let line = CTLineCreateWithAttributedString(att as! CFAttributedString)
-                lines[lines.count - 1] = LHTextLine.line(ctLine: line, position: lastLine.position, vertical: false)
+
+        if lines.last != nil {
+            let lastLine = lines.last!
+
+            if lastLine.range.location + lastLine.range.length < text.length {
+                isTruncation = true
+                let att = text.attributedSubstring(from: lastLine.range).mutableCopy() as? NSMutableAttributedString
+
+                if att != nil {
+
+                    att?.replaceCharacters(in: NSRange.init(location: att!.length - 1, length: 1), with: LHTextTruncationToken)
+
+                    let line = CTLineCreateWithAttributedString(att as! CFAttributedString)
+                    lines[lines.count - 1] = LHTextLine.line(ctLine: line, position: lastLine.position, vertical: false)
+                }
             }
-            
         }
+
         
-        
-        let layout = LHTextLayout.init()
-        layout._attributedText = text
-        layout._textContainer = container
-        layout._range = range
-        layout._framesetter = ctSetter
-        layout._frame = ctFrame
-        layout._textBoundingRect = textBoundingRect
-        layout._lines = lines
-        layout._isTruncation = isTruncation
+
+        self._attributedText = text
+        self._textContainer = container
+        self._range = range
+        self._framesetter = ctSetter
+        self._frame = ctFrame
+        self._textBoundingRect = textBoundingRect
+        self._lines = lines
+        self._isTruncation = isTruncation
         
         if lineOrigins != nil {
             free(lineOrigins)
         }
-        
-        return layout
+    }
+
+
+    func updateLayout(container: LHTextContainer) {
+
     }
     
     
@@ -312,7 +335,7 @@ class LHTextLayout: NSObject {
     }
     
     func draw(context: CGContext, rect: CGRect, point:CGPoint, targetView: UIView, targetLayer: CALayer) {
-       
+      // self.attributedText .draw(in: CGRect.init(x: 0, y: 0, width: 200, height: 200))
         self.drawText(layout: self, context: context, size: rect.size, point: point)
         self.drawAttachment(layout: self, context: context, size: rect.size, point: point, targetView: targetView, targetLayer: targetLayer)
     }
@@ -323,7 +346,7 @@ class LHTextLayout: NSObject {
         context.scaleBy(x: 1, y: -1)
         context.translateBy(x: 0, y: -size.height)
         context.textPosition = point
- 
+
         let lines = layout.lines
         for i in 0 ..< lines.count {
             let line = lines[i]
@@ -338,7 +361,7 @@ class LHTextLayout: NSObject {
                 context.textPosition = CGPoint.init(x: posX, y: posY)
                 
                 self.drawRun(context: context, line: line, run: run, size: size, isVertical: layout.textContainer.verticalForm)
-                
+
             }
             
         }
@@ -352,17 +375,20 @@ class LHTextLayout: NSObject {
                 let runTextMatrixIsID = runTextMatrix.isIdentity
         
                 let attrs =  CTRunGetAttributes(run) as NSDictionary
-        //        let attachment = attrs[LHTextAttachmentAttributeName] as? NSTextAttachment
+
         if !isVertical {
                 if !runTextMatrixIsID {
                     context.saveGState()
-                  context.textMatrix = context.textMatrix.concatenating(runTextMatrix)
+                    context.textMatrix = context.textMatrix.concatenating(runTextMatrix)
                 }
                 CTRunDraw(run, context, CFRangeMake(0, 0))
                 if  !runTextMatrixIsID {
                     context.restoreGState()
                 }
         }else {
+            if attrs[kCTFontAttributeName] == nil {
+                return
+            }
             let runFont = attrs[kCTFontAttributeName] as! CTFont
             let glyphCount = CTRunGetGlyphCount(run)
             if glyphCount <= 0 {
@@ -373,29 +399,34 @@ class LHTextLayout: NSObject {
             
             CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs)
             CTRunGetPositions(run, CFRangeMake(0, 0), glyphPositions)
-            
-            let fillColor = UIColor.orange.cgColor
-            let strokeWidth = NSNumber.init(value: 13)
-            
+
+            var fillColor = UIColor.orange.cgColor
+            if attrs[NSForegroundColorAttributeName] != nil {
+                fillColor = (attrs[NSForegroundColorAttributeName] as! UIColor).cgColor
+            }
+
+            let strokeWidth = attrs[kCTStrokeWidthAttributeName] as? NSNumber
+
+
             context.saveGState()
             context.setFillColor(fillColor)
-            if strokeWidth.floatValue == 0 {
+            if strokeWidth == nil {
                 context.setTextDrawingMode(.fill)
                 
             }else {
-                let strokeColor = UIColor.black.cgColor
-                context.setStrokeColor(strokeColor)
-                let lineWidth = CTFontGetSize(runFont) * CGFloat(fabs(strokeWidth.floatValue * 0.01))
-                
-                context.setLineWidth(lineWidth)
-                if strokeWidth.floatValue > 0 {
-                    context.setTextDrawingMode(.stroke)
-                }else{
-                    context.setTextDrawingMode(.fillStroke)
-                }
+//                let strokeColor = UIColor.black.cgColor
+//                context.setStrokeColor(strokeColor)
+//                let lineWidth = CTFontGetSize(runFont) * CGFloat(fabs(strokeWidth.floatValue * 0.01))
+//                
+//                context.setLineWidth(lineWidth)
+//                if strokeWidth.floatValue > 0 {
+//                    context.setTextDrawingMode(.stroke)
+//                }else{
+//                    context.setTextDrawingMode(.fillStroke)
+//                }
             }
             if isVertical {
-                let runStrIdx = UnsafeMutablePointer<CFIndex>.allocate(capacity: glyphCount+1)
+                let runStrIdx = UnsafeMutablePointer<CFIndex>.allocate(capacity: glyphCount + 1)
                
                 CTRunGetStringIndices(run, CFRangeMake(0, 0), runStrIdx)
                 let runStrRange = CTRunGetStringRange(run)
@@ -407,32 +438,36 @@ class LHTextLayout: NSObject {
                 let ascent = CTFontGetAscent(runFont)
                 let descent = CTFontGetDescent(runFont)
               //  let glyphTransform = glyphTransformValue.cag
-                let zeroPoint = CGPoint.zero
-                
+
                 let range = CTRunGetStringRange(run)
-                
-                for i in 0 ..< (range.length + range.location) {
-                   
+
+                for i in 0 ..< range.length {
+
                   context.saveGState()
                    
                     context.textMatrix = CGAffineTransform.identity
-                 
-                    
-                    context.rotate(by:CGFloat(90 * M_PI / 180))
-                    context.textPosition = CGPoint.init(x: line.position.y - size.height + glyphPositions[i].x-300, y: line.position.x + 0 + glyphPositions[i].y-700)
-                 
-                    var zeroPoint = CGPoint.zero
-                    
-                   //CTFontDrawGlyphs(runFont, &glyphs[i], &zeroPoint, glyphCount, context)
-                    let cgFont = CTFontCopyGraphicsFont(runFont, nil)
-                    context.setFont(cgFont)
-                    context.setFontSize(CTFontGetSize(runFont))
-                    let zero = CGPoint.zero
-                    context.showGlyphs([glyphs[i]], at: [zero])
-               
+
+                    if false {
+                         context.rotate(by:CGFloat(-90 * M_PI / 180))
+                         context.textPosition = CGPoint.init(x: line.position.y - size.height + glyphPositions[i].x, y: line.position.x + 0 + glyphPositions[i].y)
+                    }else {
+                        // CJK glyph, need rotated
+                        let ofs = (ascent - descent) * 0.5
+                        let w = glyphAdvances[i].width * 0.5
+                        let x = line.position.x + glyphPositions[i].y - (descent)/2 + size.width
+                        let y = -line.position.y  + size.height - glyphPositions[i].x - (ofs + w)
+
+                        context.textPosition = CGPoint.init(x: x, y: y)
+                    }
+
+                        let cgFont = CTFontCopyGraphicsFont(runFont, nil)
+                        context.setFont(cgFont)
+                        context.setFontSize(CTFontGetSize(runFont))
+                        context.showGlyphs([glyphs[i]], at: [CGPoint.zero])
+
                     context.restoreGState()
                   
-                    
+
                 }
             }
             

@@ -16,23 +16,28 @@ class ViewController: UIViewController, LHLabelDelegate {
         let mm = MMLabel.init(frame: self.view.frame)
         self.view.addSubview(mm)
         mm.backgroundColor = UIColor.gray
-//        mm.lh_left = 100;
-//        mm.lh_top = 100;
-//        mm.lh_size = CGSize.init(width: 200, height: 200)
-    
-        let att = NSMutableAttributedString.init(string: "我自横刀")
+        mm.lh_left = 100;
+        mm.lh_top = 100;
+        mm.lh_size = CGSize.init(width: 200, height: 200)
+
+        let att = NSMutableAttributedString.init(string: "君悦风兮遮窗扉，君悦雨兮披蓑衣，沧海月明珠有泪，蓝田日乱玉生烟，此情可待成追忆，只是当时已惘然")
         att.lh_font = UIFont.systemFont(ofSize: 16)
         att.lh_color = UIColor.white
-       // att.lh_lineSpacing = 20
+        att.lh_lineSpacing = 20
+       // att.lh_kern = (20)
        // att.insert(image: UIImage.init(named: "buffer"), frame: CGRect.init(x: 0, y: -7, width: 60, height: 60), index: 2)
         let path = UIBezierPath.init(rect: CGRect.init(x: 30 , y: 30, width: 30, height: 30))
         let container = LHTextContainer.container(size: CGSize.init(width: 200, height: 200))
-        container.maximumNumberOfRows = 0
-        container.verticalForm = true
-      //  container.exclusionPaths = [path]
+        container.maximumNumberOfRows = 5
+       // container.verticalForm = true
+        //container.exclusionPaths = [path]
         
-        mm.textLayout = LHTextLayout.layout(container: container, text: att, range: NSRange.init(location: 0, length: att.length))
-      // mm.sizeToFit()
+        mm.textLayout = LHTextLayout.layout(container: container, text: att)
+
+        att.lh_font = UIFont.systemFont(ofSize: 30)
+        att.lh_color = UIColor.orange
+        att.lh_lineSpacing = 1
+        mm.attributedText = att
       
         return
         

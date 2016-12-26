@@ -31,7 +31,7 @@ import UIKit
 
 
 public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
-public let  LHTextTruncationToken = "..."
+public let  LHTextTruncationToken = "…"
 
 func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
 

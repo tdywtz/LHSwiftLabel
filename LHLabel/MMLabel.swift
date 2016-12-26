@@ -10,16 +10,32 @@ import UIKit
 
 class MMLabel: UIView {
 
-    var textLayout = LHTextLayout(){
-        didSet{
+    var textLayout = LHTextLayout() {
+        didSet {
             setNeedsDisplay()
         }
     }
-    
+
+    var attributedText = NSAttributedString() {
+        didSet {
+           resetting()
+            setNeedsDisplay()
+        }
+    }
+
+    var preferredMaxLayoutWidth: CGFloat = 0 {
+        didSet {
+            self.invalidateIntrinsicContentSize()
+        }
+    }
+
+    func resetting() {
+        textLayout.update(attributedText: attributedText)
+    }
   
     override init(frame: CGRect) {
         super.init(frame: frame)
-    
+        textLayout = LHTextLayout.layout(size: UIScreen.main.bounds.size, text: attributedText)
     }
 
    required  init?(coder aDecoder: NSCoder) {
@@ -33,9 +49,16 @@ class MMLabel: UIView {
     }
 
     open override func sizeThatFits(_ size: CGSize) -> CGSize {
+        print("ssss=\(self.frame)")
         return textLayout.textBoundingRect.size
     }
-   
+
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        textLayout.textContainer.size = self.lh_size
+        print("\(self.frame)")
+    }
+
     override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()
         if context != nil {
