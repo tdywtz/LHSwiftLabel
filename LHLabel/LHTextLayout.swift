@@ -12,7 +12,6 @@ class LHTextContainer : NSObject {
     
     var size = CGSize()
     var insets = UIEdgeInsets()
-    var path = UIBezierPath()
     var exclusionPaths: [UIBezierPath] = []
     var pathLineWidth: CGFloat = 0
     var maximumNumberOfRows: Int = 0
@@ -42,7 +41,6 @@ class LHTextContainer : NSObject {
         
         container.size = size
         container.insets = insets
-        container.path = path
         container.exclusionPaths = exclusionPaths
         container.pathLineWidth = pathLineWidth
         container.maximumNumberOfRows = maximumNumberOfRows
@@ -79,7 +77,14 @@ class LHTextLayout: NSObject {
     var textBoundingRect: CGRect {
         return _textBoundingRect
     }
-    
+
+    var bounds: CGRect {
+
+        let rect = CGRect.init(x: 0, y: 0, width: textBoundingRect.width + _textInsets.left + _textInsets.right, height: textBoundingRect.height + _textInsets.top + _textInsets.bottom)
+
+        return rect
+    }
+
     var textInsets: UIEdgeInsets{
         return _textInsets
     }
@@ -100,14 +105,21 @@ class LHTextLayout: NSObject {
         return _isTruncation
     }
 
-    func update(attributedText: NSAttributedString) {
-        let text = attributedText.copy() as? NSAttributedString
-        if text != nil {
-                _attributedText = text!
-               self.layout(container: self.textContainer, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
-        }
-    }
+    override func copy() -> Any {
+        let copy = LHTextLayout.init()
+        copy._attributedText = _attributedText
+        copy._frame = _frame
+        copy._framesetter = _framesetter
+        copy._isTruncation = isTruncation
+        copy._lines = lines
+        copy._range = _range
+        copy._textBoundingRect = _textBoundingRect
+        copy._textContainer = _textContainer
+        copy._textInsets = _textInsets
+        copy.maximumNumberOfRows = maximumNumberOfRows
 
+        return copy
+    }
 
     //MARK: textLayout
     class  func layout(size: CGSize, text: NSAttributedString) -> LHTextLayout {
@@ -121,7 +133,19 @@ class LHTextLayout: NSObject {
 
         return layout
     }
-    
+
+    func update(attributedText: NSAttributedString) {
+        let text = attributedText.copy() as? NSAttributedString
+        if text != nil {
+            _attributedText = text!
+            self.layout(container: self.textContainer, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
+        }
+    }
+    func updateLayout(container: LHTextContainer){
+      self.layout(container: container, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
+    }
+
+
     func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) {
         
         var rect = CGRect.zero
@@ -146,10 +170,12 @@ class LHTextLayout: NSObject {
             return
         }
         
-        
+        rect = CGRect.init(origin: CGPoint(), size: container.size)
+        rect = UIEdgeInsetsInsetRect(rect, container.insets)
+        rect.origin.x = 0;
+        rect.origin.y = 0;
         if container.exclusionPaths.count == 0{
-            rect = CGRect.init(origin: CGPoint(), size: container.size)
-            rect = UIEdgeInsetsInsetRect(rect, container.insets)
+
             rect =  rect.standardized
             cgPathBox = rect;
             rect = rect.applying(CGAffineTransform.init(scaleX: 1, y: -1))
@@ -157,12 +183,9 @@ class LHTextLayout: NSObject {
             
         }else{
             var mpath: CGMutablePath?
-            rect = CGRect.init(origin: CGPoint(), size: container.size)
-            rect = UIEdgeInsetsInsetRect(rect, container.insets)
             let rectPath = CGPath.init(rect: rect, transform: nil)
-            
+
             mpath = rectPath.mutableCopy()
-            
             
             if mpath != nil {
                 for bezierPath in container.exclusionPaths {
@@ -308,7 +331,6 @@ class LHTextLayout: NSObject {
             }
         }
 
-        
 
         self._attributedText = text
         self._textContainer = container
@@ -318,16 +340,13 @@ class LHTextLayout: NSObject {
         self._textBoundingRect = textBoundingRect
         self._lines = lines
         self._isTruncation = isTruncation
+        self._textInsets = container.insets
         
         if lineOrigins != nil {
             free(lineOrigins)
         }
     }
 
-
-    func updateLayout(container: LHTextContainer) {
-
-    }
     
     
     public override init(){
@@ -336,8 +355,11 @@ class LHTextLayout: NSObject {
     
     func draw(context: CGContext, rect: CGRect, point:CGPoint, targetView: UIView, targetLayer: CALayer) {
       // self.attributedText .draw(in: CGRect.init(x: 0, y: 0, width: 200, height: 200))
-        self.drawText(layout: self, context: context, size: rect.size, point: point)
-        self.drawAttachment(layout: self, context: context, size: rect.size, point: point, targetView: targetView, targetLayer: targetLayer)
+        var cPoint = point
+        cPoint.x += _textInsets.left
+        cPoint.y += _textInsets.top
+        self.drawText(layout: self, context: context, size: rect.size, point: cPoint)
+        self.drawAttachment(layout: self, context: context, size: rect.size, point: cPoint, targetView: targetView, targetLayer: targetLayer)
     }
     
     func drawText(layout: LHTextLayout, context: CGContext, size: CGSize, point: CGPoint) {
@@ -350,7 +372,7 @@ class LHTextLayout: NSObject {
         let lines = layout.lines
         for i in 0 ..< lines.count {
             let line = lines[i]
-            let posX = line.position.x
+            let posX = line.position.x + point.x
             let posY = (size.height - line.position.y - point.y)
             
             let ctRuns = CTLineGetGlyphRuns(line.ctLine!)
@@ -486,11 +508,14 @@ class LHTextLayout: NSObject {
                 }
                 
                 var rect = line.attachmentRects[i]
+                rect.origin.x += size.width
                 rect = UIEdgeInsetsInsetRect(rect, ment.contentInsets)
                 rect = rect.standardized
                 rect.origin.x += point.x
                 rect.origin.y += point.y
-                
+
+
+
                 if content!.isKind(of: UIImage.classForCoder()) {
                     let cgImage = (ment.content as! UIImage).cgImage
                     if cgImage != nil {
@@ -550,5 +575,25 @@ class LHTextLayout: NSObject {
         let set = NSMutableCharacterSet.init()
         set.addCharacters(in: "，。、")
         return set
+    }
+}
+
+extension LHTextLayout {
+    func glyphIndex(at point: CGPoint) -> Int {
+        var point = point
+
+        point.y -= self.textInsets.top
+        if textContainer.verticalForm {
+            point.x -= (bounds.size.width - self.textInsets.right)
+        }else{
+            point.x -= self.textInsets.left
+        }
+
+        for line in self.lines {
+            if line.bounds.contains(point) {
+             return line.glyphIndex(at: point)
+            }
+        }
+        return NSNotFound
     }
 }

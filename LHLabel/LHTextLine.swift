@@ -32,7 +32,7 @@ class LHTextAttachment: NSObject {
 
     var ascent: CGFloat {
 
-         return bounds.height - bounds.origin.y
+        return bounds.height - bounds.origin.y
     }
 
     var descent: CGFloat {
@@ -42,7 +42,7 @@ class LHTextAttachment: NSObject {
     var width: CGFloat {
         return bounds.width
     }
-    
+
 }
 
 
@@ -62,7 +62,7 @@ class LHTextLine: NSObject {
 
         return line
     }
-    
+
 
     private var _firstGlyphPos: CGFloat = 0
     private var _ctLine: CTLine?
@@ -77,7 +77,7 @@ class LHTextLine: NSObject {
     private var _attachments = Array<LHTextAttachment>()
     private var _attachmentRanges = Array<NSRange>()
     private var _attachmentRects = Array<CGRect>()
-    
+
     var row: Int = 0
 
     var ctLine: CTLine? {
@@ -129,9 +129,9 @@ class LHTextLine: NSObject {
         return _attachmentRects
     }
 
- 
+
     func setting(line: CTLine) {
-       let width = CTLineGetTypographicBounds(line, &_ascent, &_descent, &_leading)
+        let width = CTLineGetTypographicBounds(line, &_ascent, &_descent, &_leading)
         _lineWidth = CGFloat(width)
 
         let range = CTLineGetStringRange(line)
@@ -146,10 +146,10 @@ class LHTextLine: NSObject {
             CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
             _firstGlyphPos = runPosition.x
         }
-       reloadBounds()
+        reloadBounds()
     }
-    
-    
+
+
     func reloadBounds() {
         if vertical {
             _bounds = CGRect.init(x: _position.x - _descent, y: _position.y, width: _ascent + _descent, height: _lineWidth)
@@ -157,8 +157,8 @@ class LHTextLine: NSObject {
             _bounds = CGRect.init(x: _position.x, y: _position.y - ascent, width: lineWidth, height: _ascent + _descent)
             _bounds.origin.x += _firstGlyphPos
         }
-       
-        
+
+
         let ctRuns = CTLineGetGlyphRuns(self.ctLine!)
 
         var attachments = Array<LHTextAttachment>()
@@ -173,10 +173,10 @@ class LHTextLine: NSObject {
             if glyphCount == 0 {
                 continue
             }
-    
+
             let attrs =  CTRunGetAttributes(run) as NSDictionary
             let attachment = attrs[LHTextAttachmentAttributeName] as? LHTextAttachment
-           
+
             if attachment != nil {
 
                 var runPosition = CGPoint.zero
@@ -185,14 +185,14 @@ class LHTextLine: NSObject {
                 var descent: CGFloat = 0
                 var leading: CGFloat = 0
                 var runTypoBounds = CGRect()
-                
+
                 let width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading)
-                
+
                 if vertical {
                     runPosition.y = runPosition.x
                     runPosition.x = _position.y + runPosition.y
-                    runTypoBounds = CGRect.init(x: _position.x + runPosition.x - descent, y: runPosition.y, width: ascent + descent, height: CGFloat(width))
-                    
+                    runTypoBounds = CGRect.init(x: _position.x - descent, y: runPosition.y, width: ascent + descent, height: CGFloat(width))
+
                 }else {
                     runPosition.x += _position.x;
                     runPosition.y = _position.y - runPosition.y;
@@ -205,11 +205,109 @@ class LHTextLine: NSObject {
                 attachmentRanges.append(runRange)
                 attachmentRects.append(runTypoBounds)
             }
-          
         }
         _attachments = attachments
         _attachmentRanges = attachmentRanges
         _attachmentRects = attachmentRects
     }
 
+    func glyphIndex(at position: CGPoint) -> Int {
+        if ctLine == nil {
+            return NSNotFound
+        }
+        let ctRuns = CTLineGetGlyphRuns(ctLine!)
+        var glyphIndex = NSNotFound
+
+        for i in 0 ..< CFArrayGetCount(ctRuns){
+
+            let runRawPointer = CFArrayGetValueAtIndex(ctRuns, i)
+            let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
+            let glyphCount = CTRunGetGlyphCount(run)
+            if glyphCount <= 0 {
+                continue
+            }
+
+
+            let glyphs = UnsafeMutablePointer<CGGlyph>.allocate(capacity: glyphCount)
+            let glyphPositions = UnsafeMutablePointer<CGPoint>.allocate(capacity: glyphCount)
+
+            CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs)
+            CTRunGetPositions(run, CFRangeMake(0, 0), glyphPositions)
+
+            let runStrIdx = UnsafeMutablePointer<CFIndex>.allocate(capacity: glyphCount + 1)
+
+            CTRunGetStringIndices(run, CFRangeMake(0, 0), runStrIdx)
+            let runStrRange = CTRunGetStringRange(run)
+            runStrIdx[glyphCount] = runStrRange.location + runStrRange.length
+
+            let glyphAdvances = UnsafeMutablePointer<CGSize>.allocate(capacity: glyphCount)
+            CTRunGetAdvances(run, CFRangeMake(0, 0), glyphAdvances)
+
+            var runPosition = CGPoint.zero
+            CTRunGetPositions(run, CFRangeMake(0, 1), &runPosition)
+            var ascent: CGFloat = 0
+            var descent: CGFloat = 0
+            var leading: CGFloat = 0
+            let width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading)
+
+            let attrs =  CTRunGetAttributes(run) as NSDictionary
+            let attachment = attrs[LHTextAttachmentAttributeName] as? LHTextAttachment
+            if attachment != nil {
+                var runTypoBounds = CGRect.zero
+
+                if vertical {
+                    runPosition.y = runPosition.x
+                    runPosition.x = _position.y + runPosition.y
+                    runTypoBounds = CGRect.init(x: _position.x - descent, y: runPosition.y, width: ascent + descent, height: CGFloat(width))
+                    runTypoBounds = runTypoBounds.standardized
+
+                }else {
+                    runPosition.x += _position.x;
+                    runPosition.y = _position.y - runPosition.y;
+                    runTypoBounds = CGRect.init(x: runPosition.x, y: runPosition.y - ascent, width: CGFloat(width), height: ascent + descent)
+                }
+                runTypoBounds = UIEdgeInsetsInsetRect(runTypoBounds, attachment!.contentInsets)
+                if runTypoBounds.contains(position) {
+
+                   glyphIndex = CTRunGetStringRange(run).location
+                   break
+                }
+                continue
+            }
+
+            let range = CTRunGetStringRange(run)
+            for k in 0 ..<  range.length{
+
+                var point = CGPoint.zero
+                var size = CGSize.zero
+
+                if vertical {
+                   // CJK glyph, need rotated
+                    let ofs = (ascent - descent) * 0.5
+                    let w = glyphAdvances[i].width * 0.5
+                    let x = self.position.x + glyphPositions[k].y - (descent)/2 + size.width
+                    let y = -self.position.y  + size.height - glyphPositions[k].x - (ofs + w) + ascent
+                    point = CGPoint.init(x: x, y: -y)
+                    size = CGSize.init(width: ascent + descent, height: glyphAdvances[i].width)
+                }else {
+                    point.x = self.position.x + glyphPositions[k].x
+                    point.y = self.position.y  - ascent + descent
+                    size = CGSize.init(width: glyphAdvances[i].width + 1, height: ascent + descent)
+                }
+
+                let rect = CGRect.init(origin: point, size: size)
+
+                if rect.contains(position) {
+                    glyphIndex = range.location + k
+                    break
+                }
+            }
+
+            runStrIdx.deallocate(capacity: glyphCount + 1)
+            glyphs.deallocate(capacity: glyphCount)
+            glyphPositions.deallocate(capacity: glyphCount)
+            glyphAdvances.deallocate(capacity: glyphCount)
+        }
+        return glyphIndex
+    }
 }
