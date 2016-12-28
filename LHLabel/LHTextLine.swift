@@ -9,48 +9,6 @@
 
 import UIKit
 
-
-
-
-
-
-class LHTextAttachment: NSObject {
-    class func attchment(content: AnyObject?) -> LHTextAttachment {
-        let attchment = LHTextAttachment.init()
-        attchment.content = content
-        return attchment
-    }
-
-
-
-    var content: AnyObject?
-    var contentMode: UIViewContentMode = .scaleToFill
-    var contentInsets = UIEdgeInsets.zero
-    var userInfo = NSDictionary()
-    var bounds = CGRect()
-
-
-    var ascent: CGFloat {
-
-        return bounds.height - bounds.origin.y
-    }
-
-    var descent: CGFloat {
-        return bounds.origin.y;
-    }
-
-    var width: CGFloat {
-        return bounds.width
-    }
-
-}
-
-
-
-
-
-
-
 class LHTextLine: NSObject {
 
     class func line(ctLine: CTLine, position: CGPoint, vertical: Bool) -> LHTextLine {

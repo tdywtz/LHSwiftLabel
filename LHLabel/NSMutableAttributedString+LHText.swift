@@ -30,37 +30,6 @@
 import UIKit
 
 
-public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
-public let  LHTextTruncationToken = "…"
-
-func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
-
-    var cbs = CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (refCon) -> Void in
-        refCon.deallocate(bytes: 0, alignedTo: 0)
-    }, getAscent: { (refCon) -> CGFloat in
-        
-        let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
-        let r = a.pointee
-        return r.ascent
-
-    }, getDescent: { (refCon) -> CGFloat in
-        let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
-        let r = a.pointee
-        return r.descent
-    },getWidth: { (refCon) -> CGFloat in
-        let a = refCon.assumingMemoryBound(to: LHTextAttachment.self)
-        let r = a.pointee
-        return r.width
-    })
-
-    let a = UnsafeMutableRawPointer.allocate(bytes: 0, alignedTo: 0)
-    a.initializeMemory(as: LHTextAttachment.self, to: attachment)
-    //a.deallocate(bytes: 0, alignedTo: 0)
-    return CTRunDelegateCreate(&cbs, a)!
-}
-
-
-
 //MARK:
 extension NSMutableAttributedString{
 
@@ -495,11 +464,10 @@ extension NSMutableAttributedString{
     }
 
     //设置富文本属性
-    func lh_setAttribute(attributeName:String, value:Any?, range:NSRange) -> Void {
+    fileprivate  func lh_setAttribute(attributeName:String, value:Any?, range:NSRange) -> Void {
         if NSNull.isEqual(attributeName) {
             return;
         }
-
 
         if (value != nil && !NSNull.isEqual(attributeName)){
             //移除旧的，添加新的
@@ -710,6 +678,12 @@ extension NSMutableAttributedString{
         return NSMutableAttributedString.attribute(attchment: ac)
     }
 
+}
+
+extension NSMutableAttributedString {
+    func lh_set(textHighlight: LHTextHighlight, range: NSRange) {
+        self.lh_setAttribute(attributeName: LHTextHighlightAttributeName, value: textHighlight, range: range)
+    }
 }
 
 

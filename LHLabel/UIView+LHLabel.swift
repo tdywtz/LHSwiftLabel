@@ -124,7 +124,8 @@ extension UIView{
 
 extension UIView {
 
-    func image(at aView: UIView) -> UIImage? {
+    ///截取view
+    func screenshot(at aView: UIView) -> UIImage? {
 
         UIGraphicsBeginImageContextWithOptions(aView.lh_size, false, 0.0)
         if let context = UIGraphicsGetCurrentContext(){
@@ -134,8 +135,9 @@ extension UIView {
             return image
         }
             return nil
-
     }
 }
+
+
 
 

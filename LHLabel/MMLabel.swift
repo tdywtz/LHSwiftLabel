@@ -18,6 +18,7 @@ class MMLabel: UIView {
 
     var attributedText = NSAttributedString() {
         didSet {
+            innerText = attributedText.mutableCopy() as! NSMutableAttributedString
             textLayout.update(attributedText: attributedText)
             setNeedsDisplay()
         }
@@ -54,7 +55,9 @@ class MMLabel: UIView {
     }
 
 
-    fileprivate let maxLayoutWidth: CGFloat = 1000000
+    private let maxLayoutHeight: CGFloat = 1000000
+    private var innerText = NSMutableAttributedString()
+
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -68,9 +71,9 @@ class MMLabel: UIView {
     // MARK: - Auto layout
     open override var intrinsicContentSize: CGSize {
         if verticalForm {
-          textLayout.textContainer.size = CGSize.init(width: maxLayoutWidth, height: preferredMaxLayoutWidth)
+          textLayout.textContainer.size = CGSize.init(width: maxLayoutHeight, height: preferredMaxLayoutWidth)
         }else {
-            textLayout.textContainer.size = CGSize.init(width: preferredMaxLayoutWidth, height: maxLayoutWidth)
+            textLayout.textContainer.size = CGSize.init(width: preferredMaxLayoutWidth, height: maxLayoutHeight)
         }
 
         textLayout.updateLayout(container: textLayout.textContainer);
@@ -79,9 +82,9 @@ class MMLabel: UIView {
 
     open override func sizeThatFits(_ size: CGSize) -> CGSize {
         if verticalForm {
-             textLayout.textContainer.size = CGSize.init(width: maxLayoutWidth, height:size.height)
+             textLayout.textContainer.size = CGSize.init(width: maxLayoutHeight, height:size.height)
         }else {
-             textLayout.textContainer.size = CGSize.init(width: size.width, height:maxLayoutWidth)
+             textLayout.textContainer.size = CGSize.init(width: size.width, height:maxLayoutHeight)
         }
         textLayout.updateLayout(container: textLayout.textContainer);
         return textLayout.bounds.size
@@ -116,24 +119,25 @@ class MMLabel: UIView {
         switch touch.phase {
         case .began, .moved:
             if let element = touche(at: location) {
-
-
+                let matt = innerText.mutableCopy() as! NSMutableAttributedString
+                matt.setLh_color(color: UIColor.blue, range: element.range)
+                textLayout.update(attributedText: matt)
                 avoidSuperCall = true
             }else{
-               // textStorage.setLh_color(color: selectedTextColor, range: selectedRange);
+                let att = innerText.copy() as! NSAttributedString
+                textLayout.update(attributedText: att)
 
             }
         case .ended:
             if let element = touche(at: location) {
-                //代理回调
-                //delegate?.didSelect(element: element)
                 avoidSuperCall = true
             }
-            //textStorage.setLh_color(color: selectedTextColor, range: selectedRange);
-
+            let att = innerText.copy() as! NSAttributedString
+            textLayout.update(attributedText: att)
             break
         case .cancelled:
-           // textStorage.setLh_color(color: selectedTextColor, range: selectedRange);
+            let att = innerText.copy() as! NSAttributedString
+            textLayout.update(attributedText: att)
             break
         case .stationary:
             break
@@ -143,8 +147,24 @@ class MMLabel: UIView {
     }
 
     fileprivate func touche(at location: CGPoint) -> ElementResult? {
-     let a =   textLayout.glyphIndex(at: location)
-        print(a)
+      let glyphIndex =   textLayout.glyphIndex(at: location)
+        if glyphIndex != NSNotFound {
+            var range = NSRange()
+            let highlight = textLayout.attributedText.attribute(LHTextHighlightAttributeName, at: glyphIndex, effectiveRange: &range) as? NSObject
+
+            if highlight != nil {
+                if highlight!.isKind(of: LHTextHighlight.classForCoder()) {
+                    let hi = highlight as! LHTextHighlight
+
+                    if hi.tapAction != nil {
+                      hi.tapAction!(self,NSDictionary(),range)
+                    }
+                }
+                let element = ElementResult(range: range, index: glyphIndex, value: highlight!)
+                return element
+
+            }
+        }
         return nil
     }
 
