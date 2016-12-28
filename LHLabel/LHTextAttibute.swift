@@ -68,6 +68,16 @@ class LHTextAttachment: NSObject {
      
     }
     
+    override func copy() -> Any {
+        let one = LHTextAttachment()
+        one.content = content
+        one.contentMode = contentMode
+        one.contentInsets = contentInsets
+        one.userInfo = userInfo
+        one.bounds = bounds
+        return one
+    }
+    
 }
 
 class LHTextHighlight: NSObject {

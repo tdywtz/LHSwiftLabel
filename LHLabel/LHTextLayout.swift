@@ -502,22 +502,24 @@ class LHTextLayout: NSObject {
         for line in layout.lines {
             for i in 0 ..< line.attachments.count {
                 let ment = line.attachments[i]
-                let content = ment.content
-                if content == nil {
+                
+                if ment.content == nil {
                     continue
                 }
-                
+                let content = ment.content!
                 var rect = line.attachmentRects[i]
-                rect.origin.x += size.width
+                if layout.textContainer.verticalForm {
+                     rect.origin.x += size.width
+                }
+               
                 rect = UIEdgeInsetsInsetRect(rect, ment.contentInsets)
                 rect = rect.standardized
                 rect.origin.x += point.x
                 rect.origin.y += point.y
 
 
-
-                if content!.isKind(of: UIImage.classForCoder()) {
-                    let cgImage = (ment.content as! UIImage).cgImage
+                if content.isKind(of: UIImage.classForCoder()) {
+                    let cgImage = (content as! UIImage).cgImage
                     if cgImage != nil {
                         context.saveGState()
                         context.translateBy(x: 0, y: rect.maxY + rect.minY)
@@ -525,6 +527,13 @@ class LHTextLayout: NSObject {
                         context.draw(cgImage!, in: rect)
                         context.restoreGState()
                     }
+                }else if content.isKind(of: UIView.classForCoder()){
+                    let view  = content as! UIView
+                    view.frame = rect
+                    DispatchQueue.main.async {
+                        targetView.addSubview(view)
+                    }
+                   
                 }
             }
         }

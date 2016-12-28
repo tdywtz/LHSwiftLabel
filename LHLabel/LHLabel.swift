@@ -11,6 +11,7 @@ import UIKit
 fileprivate let kLHTextRunAttributedName = "kLHTextRunAttributedName"
 
 typealias ElementResult = (range: NSRange, index: Int, value:Any)
+
 typealias LHImagePath = (bezier: UIBezierPath, image: UIImage?, frame: CGRect)
 
 protocol LHLabelDelegate : NSObjectProtocol{

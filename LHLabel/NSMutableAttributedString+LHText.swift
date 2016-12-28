@@ -646,6 +646,8 @@ extension NSMutableAttributedString{
         let objectReplacementString = NSString.init(characters: &objectReplacementChar, length: 1)
         let att = NSMutableAttributedString.init(string: objectReplacementString as String)
         
+        let attchment = attchment.copy() as! LHTextAttachment
+        
         let delegate = getRunDelegate(attachment: attchment, font: UIFont.systemFont(ofSize: 11))
         att.addAttribute(kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
         att.lh_setAttribute(attributeName: LHTextAttachmentAttributeName, value: attchment, range: NSRange.init(location: 0, length: 1))
@@ -684,6 +686,10 @@ extension NSMutableAttributedString {
     func lh_set(textHighlight: LHTextHighlight, range: NSRange) {
         self.lh_setAttribute(attributeName: LHTextHighlightAttributeName, value: textHighlight, range: range)
     }
+    
+//    func lh_set(attachment: LHTextAttachment, range: NSRange) {
+//        self.lh_setAttribute(attributeName: LHTextAttachmentAttributeName, value: attachment, range: range)
+//    }
 }
 
 

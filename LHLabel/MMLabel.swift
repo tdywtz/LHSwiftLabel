@@ -8,6 +8,8 @@
 
 import UIKit
 
+typealias LHElementResult = (range: NSRange, index: Int, value:AnyObject)
+
 class MMLabel: UIView {
 
     var textLayout = LHTextLayout() {
@@ -18,6 +20,7 @@ class MMLabel: UIView {
 
     var attributedText = NSAttributedString() {
         didSet {
+            
             innerText = attributedText.mutableCopy() as! NSMutableAttributedString
             textLayout.update(attributedText: attributedText)
             setNeedsDisplay()
@@ -90,15 +93,15 @@ class MMLabel: UIView {
         return textLayout.bounds.size
     }
 
-    open override func layoutSubviews() {
-       // super.layoutSubviews()
-        if textLayout.bounds.size.equalTo(self.lh_size) {
-            return
-        }
-        textLayout.textContainer.size = self.lh_size
-        textLayout.updateLayout(container: textLayout.textContainer)
-        setNeedsDisplay()
-    }
+//    open override func layoutSubviews() {
+//       // super.layoutSubviews()
+//        if textLayout.bounds.size.equalTo(self.lh_size) {
+//            return
+//        }
+//        textLayout.textContainer.size = self.lh_size
+//        textLayout.updateLayout(container: textLayout.textContainer)
+//        
+//    }
 
     override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()
@@ -130,7 +133,14 @@ class MMLabel: UIView {
             }
         case .ended:
             if let element = touche(at: location) {
+                if element.value.isKind(of: LHTextHighlight.classForCoder()) {
+                    let highlight = element.value as! LHTextHighlight
+                    if highlight.tapAction != nil {
+                        highlight.tapAction!(self,NSDictionary(),element.range)
+                    }
+                }
                 avoidSuperCall = true
+                
             }
             let att = innerText.copy() as! NSAttributedString
             textLayout.update(attributedText: att)
@@ -146,21 +156,15 @@ class MMLabel: UIView {
         return avoidSuperCall
     }
 
-    fileprivate func touche(at location: CGPoint) -> ElementResult? {
+    fileprivate func touche(at location: CGPoint) -> LHElementResult? {
       let glyphIndex =   textLayout.glyphIndex(at: location)
         if glyphIndex != NSNotFound {
             var range = NSRange()
             let highlight = textLayout.attributedText.attribute(LHTextHighlightAttributeName, at: glyphIndex, effectiveRange: &range) as? NSObject
 
             if highlight != nil {
-                if highlight!.isKind(of: LHTextHighlight.classForCoder()) {
-                    let hi = highlight as! LHTextHighlight
-
-                    if hi.tapAction != nil {
-                      hi.tapAction!(self,NSDictionary(),range)
-                    }
-                }
-                let element = ElementResult(range: range, index: glyphIndex, value: highlight!)
+              
+                let element = LHElementResult(range: range, index: glyphIndex, value: highlight!)
                 return element
 
             }
