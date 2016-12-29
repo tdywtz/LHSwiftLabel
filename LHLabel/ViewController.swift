@@ -42,13 +42,13 @@ class ViewController: UIViewController {
        // att.insert(image: UIImage.init(named: "buffer"), frame: CGRect.init(x: 0, y: 0, width: 60, height: 30), index: 3)
 
         
-//        let image = UIImage.init(named: "buffer")
-//        let iv = UIImageView.init(image: image)
-//        let attachment = LHTextAttachment.attchment(content: iv)
-//        attachment.bounds = CGRect.init(x: 0, y: 0, width: 30, height: 30)
-//        let text = NSMutableAttributedString.attribute(attchment: attachment)
-//        att.insert(text, at: 5)
-        
+        let image = UIImage.init(named: "buffer")
+        let iv = UIImageView.init(image: image)
+        let attachment = LHTextAttachment.attchment(content: iv)
+        attachment.bounds = CGRect.init(x: 0, y: 0, width: 30, height: 30)
+        let text = NSMutableAttributedString.attribute(attchment: attachment)
+        att.insert(text, at: 5)
+
         let hi = LHTextHighlight()
         hi.tapAction = { (a,b,c) in
            print(a)

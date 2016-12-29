@@ -646,7 +646,7 @@ extension NSMutableAttributedString{
         let objectReplacementString = NSString.init(characters: &objectReplacementChar, length: 1)
         let att = NSMutableAttributedString.init(string: objectReplacementString as String)
         
-        let attchment = attchment.copy() as! LHTextAttachment
+       // let attchment = attchment.copy() as! LHTextAttachment
         
         let delegate = getRunDelegate(attachment: attchment, font: UIFont.systemFont(ofSize: 11))
         att.addAttribute(kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
