@@ -331,6 +331,42 @@ class LHTextLayout: NSObject {
             }
         }
 
+        if vertical {
+            let rotateCharset = self.VerticalFormRotateCharacterSet()
+            let rotateMoveCharset = self.VerticalFormRotateAndMoveCharacterSet()
+
+            let lineClosure:(LHTextLine) ->Void = { (line) -> Void in
+                if line.ctLine == nil {
+                    return
+                }
+             let ctRuns = CTLineGetGlyphRuns(line.ctLine!)
+             let runCount = CFArrayGetCount(ctRuns)
+                if rowCount == 0 {
+                    return
+                }
+                let lineRunRanges = NSMutableArray()
+                for i in 0 ..< runCount {
+                    let runRawPointer = CFArrayGetValueAtIndex(ctRuns, i)
+                    let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
+                    let glyphCount = CTRunGetGlyphCount(run)
+                    if glyphCount <= 0 {
+                        continue
+                    }
+                    let runStrIdx = UnsafeMutablePointer<CFIndex>.allocate(capacity: glyphCount+1)
+                    CTRunGetStringIndices(run, CFRangeMake(0, 0), runStrIdx);
+                    let runStrRange = CTRunGetStringRange(run);
+                    runStrIdx[glyphCount] = runStrRange.location + runStrRange.length;
+                    let runAttrs = CTRunGetAttributes(run)
+
+                }
+
+            }
+
+            for line in lines {
+                lineClosure(line)
+            }
+        }
+
 
         self._attributedText = text
         self._textContainer = container
