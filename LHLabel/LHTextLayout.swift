@@ -9,36 +9,36 @@
 import UIKit
 
 class LHTextContainer : NSObject {
-    
+
     var size = CGSize()
     var insets = UIEdgeInsets()
     var exclusionPaths: [UIBezierPath] = []
     var pathLineWidth: CGFloat = 0
     var maximumNumberOfRows: Int = 0
     var verticalForm = false
-    
-    
-    
-//    public override init() {
-//        super.init()
-//    }
-    
+
+
+
+    //    public override init() {
+    //        super.init()
+    //    }
+
     class  func container(size: CGSize) -> LHTextContainer {
         return self.container(size: size, insets: UIEdgeInsets())
     }
-    
+
     class  func container(size: CGSize, insets: UIEdgeInsets) -> LHTextContainer {
         let container = LHTextContainer.init()
         container.size = size
         container.insets = insets
         return container
     }
-    
-    
+
+
     override func copy() -> Any {
-        
+
         let container = LHTextContainer.init()
-        
+
         container.size = size
         container.insets = insets
         container.exclusionPaths = exclusionPaths
@@ -50,7 +50,7 @@ class LHTextContainer : NSObject {
 }
 
 class LHTextLayout: NSObject {
-    
+
     private var _textContainer = LHTextContainer()
     private var _attributedText = NSAttributedString()
     private var _range = NSRange()
@@ -61,19 +61,19 @@ class LHTextLayout: NSObject {
     private var _lines = Array<LHTextLine>()
     private var _isTruncation = false
     private var maximumNumberOfRows: Int = 0
-    
+
     var textContainer: LHTextContainer {
         return _textContainer
     }
-    
+
     var attributedText: NSAttributedString {
         return _attributedText
     }
-    
+
     var range: NSRange {
         return _range
     }
-    
+
     var textBoundingRect: CGRect {
         return _textBoundingRect
     }
@@ -88,19 +88,19 @@ class LHTextLayout: NSObject {
     var textInsets: UIEdgeInsets{
         return _textInsets
     }
-    
+
     var frame: CTFrame?{
         return _frame
     }
-    
+
     var framesetter:CTFramesetter?{
         return _framesetter
     }
-    
+
     var lines: Array<LHTextLine> {
         return _lines
     }
-    
+
     var isTruncation: Bool {
         return _isTruncation
     }
@@ -126,10 +126,10 @@ class LHTextLayout: NSObject {
         let container = LHTextContainer.container(size: size)
         return self.layout(container: container, text: text)
     }
-    
+
     class  func layout(container: LHTextContainer, text: NSAttributedString) -> LHTextLayout {
         let layout = LHTextLayout.init()
-         layout.layout(container: container, text: text, range: NSMakeRange(0, text.length))
+        layout.layout(container: container, text: text, range: NSMakeRange(0, text.length))
 
         return layout
     }
@@ -142,12 +142,12 @@ class LHTextLayout: NSObject {
         }
     }
     func updateLayout(container: LHTextContainer){
-      self.layout(container: container, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
+        self.layout(container: container, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
     }
 
 
     func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) {
-        
+
         var rect = CGRect.zero
         var cgPath:CGPath?
         var cgPathBox = CGRect.zero
@@ -160,16 +160,16 @@ class LHTextLayout: NSObject {
         var lines = Array<LHTextLine>()
         var isTruncation = false
         let vertical = container.verticalForm
-        
+
         let maximumNumberOfRows: Int = container.maximumNumberOfRows
-        
+
         let text = text.copy() as! NSAttributedString
         let container = container.copy() as! LHTextContainer
-        
+
         if range.length + range.location > text.length {
             return
         }
-        
+
         rect = CGRect.init(origin: CGPoint(), size: container.size)
         rect = UIEdgeInsetsInsetRect(rect, container.insets)
         rect.origin.x = 0;
@@ -180,13 +180,13 @@ class LHTextLayout: NSObject {
             cgPathBox = rect;
             rect = rect.applying(CGAffineTransform.init(scaleX: 1, y: -1))
             cgPath = CGPath.init(rect: rect, transform: nil)
-            
+
         }else{
             var mpath: CGMutablePath?
             let rectPath = CGPath.init(rect: rect, transform: nil)
 
             mpath = rectPath.mutableCopy()
-            
+
             if mpath != nil {
                 for bezierPath in container.exclusionPaths {
                     mpath!.addPath(bezierPath.cgPath)
@@ -196,30 +196,30 @@ class LHTextLayout: NSObject {
                 let transPath = CGMutablePath.init()
                 transPath.addPath(mpath!, transform: trans)
                 mpath = transPath
-                
+
             }
             cgPath = mpath
         }
-        
-        
+
+
         if container.verticalForm {
             frameAttrs[kCTFrameProgressionAttributeName] = (CTFrameProgression.rightToLeft.hashValue)
         }
-        
-               // frameAttrs[kCTFramePathWidthAttributeName] = (0)
-               // frameAttrs[kCTFramePathFillRuleAttributeName] = (CTFramePathFillRule.windingNumber.hashValue)
-        
+
+        // frameAttrs[kCTFramePathWidthAttributeName] = (0)
+        // frameAttrs[kCTFramePathFillRuleAttributeName] = (CTFramePathFillRule.windingNumber.hashValue)
+
         ctSetter = CTFramesetterCreateWithAttributedString(text as CFAttributedString)
-        
+
         ctFrame = CTFramesetterCreateFrame(ctSetter!, CFRangeMake(0, CFIndex(text.length)), cgPath!, frameAttrs)
-        
+
         ctLines = CTFrameGetLines(ctFrame!)
         lineCount = CFArrayGetCount(ctLines!)
         if lineCount > 0 {
             lineOrigins = UnsafeMutablePointer<CGPoint>.allocate(capacity: lineCount)
             CTFrameGetLineOrigins(ctFrame!, CFRange.init(), lineOrigins)
         }
-        
+
         var textBoundingRect = CGRect.zero
         var rowIdx: Int = -1
         var rowCount: Int = 0
@@ -234,10 +234,10 @@ class LHTextLayout: NSObject {
             let ctLine = Unmanaged<AnyObject>.fromOpaque(CFArrayGetValueAtIndex(ctLines, i)).takeUnretainedValue() as! CTLine
             let ctRuns = CTLineGetGlyphRuns(ctLine)
             if  CFArrayGetCount(ctRuns) == 0 { continue }
-            
+
             let ctLineOrigin = lineOrigins![i]
             var position = CGPoint.zero
-            
+
             position.x =  cgPathBox.origin.x + ctLineOrigin.x
             position.y = cgPathBox.height - ctLineOrigin.y
 
@@ -251,9 +251,9 @@ class LHTextLayout: NSObject {
             let rect = lhLine.bounds
 
             if vertical {
-                
+
             }else {
-                
+
             }
             var newRow = true
             if vertical {
@@ -277,14 +277,14 @@ class LHTextLayout: NSObject {
                     }
                 }
             }
-         
-            
+
+
             if (newRow){
                 rowIdx += 1
             }
             lastRect = rect;
             lastPosition = position;
-            
+
             lhLine.row = rowIdx
             rowCount += 1
             lineCurrentIdx += 1
@@ -296,16 +296,16 @@ class LHTextLayout: NSObject {
                 }
             }
         }
-     
+
         if rowCount > 0 {
             if maximumNumberOfRows > 0 {
                 if rowCount > maximumNumberOfRows {
                     while (true) {
-                         let line = lines.last
+                        let line = lines.last
                         if line == nil {
                             break
                         }
-                         if line!.row < maximumNumberOfRows {
+                        if line!.row < maximumNumberOfRows {
                             break
                         }
                         lines.removeLast()
@@ -339,12 +339,12 @@ class LHTextLayout: NSObject {
                 if line.ctLine == nil {
                     return
                 }
-             let ctRuns = CTLineGetGlyphRuns(line.ctLine!)
-             let runCount = CFArrayGetCount(ctRuns)
+                let ctRuns = CTLineGetGlyphRuns(line.ctLine!)
+                let runCount = CFArrayGetCount(ctRuns)
                 if rowCount == 0 {
                     return
                 }
-                let lineRunRanges = NSMutableArray()
+
                 for i in 0 ..< runCount {
                     let runRawPointer = CFArrayGetValueAtIndex(ctRuns, i)
                     let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
@@ -356,10 +356,44 @@ class LHTextLayout: NSObject {
                     CTRunGetStringIndices(run, CFRangeMake(0, 0), runStrIdx);
                     let runStrRange = CTRunGetStringRange(run);
                     runStrIdx[glyphCount] = runStrRange.location + runStrRange.length;
-                    let runAttrs = CTRunGetAttributes(run)
+                    let runAttrs = CTRunGetAttributes(run) as NSDictionary
+                    let font = runAttrs[kCTFontAttributeName] as! CTFont
+                    let isColorGlyph: Bool = (CTFontGetSymbolicTraits(font).rawValue & CTFontSymbolicTraits.colorGlyphsTrait.rawValue) != 0
+                    var prevIdx: Int = 0
+                    let layoutStr = self.attributedText.string as NSString
+                    for g in 0 ..< glyphCount {
+                        var glyphRotate = false
+                        var glyphRotateMove = false
+                        let runStrLen: CFIndex = runStrIdx[g + 1] - runStrIdx[g]
+                        if isColorGlyph {
+                            glyphRotate = true
+                        }else if runStrLen == 1 {
+                            let c: unichar = layoutStr.character(at: runStrIdx[g])
+                            glyphRotate = rotateCharset.characterIsMember(c)
+                            if glyphRotate {
+                                glyphRotateMove = rotateMoveCharset.characterIsMember(c)
+                            }
 
+                        }else if runStrLen > 1 {
+                            let glyphStr: NSString = layoutStr.substring(with: NSRange.init(location: runStrIdx[g], length: runStrLen)) as NSString
+                            let glyphRotate: Bool = glyphStr.rangeOfCharacter(from: rotateCharset as CharacterSet).location != NSNotFound
+
+                            if glyphRotate {
+                                glyphRotateMove = glyphStr.rangeOfCharacter(from: rotateMoveCharset as CharacterSet).location != NSNotFound
+                            }
+                        }
+                        if g == 0 {
+
+                        }
+
+                        prevIdx = g
+                        if glyphRotate {
+                            let range = NSRange.init(location: runStrIdx[g], length:runStrLen)
+                            line.verticalRotateRange.append(range)
+                        }
+                    }
+                    runStrIdx.deallocate(capacity: glyphCount + 1)
                 }
-
             }
 
             for line in lines {
@@ -377,30 +411,30 @@ class LHTextLayout: NSObject {
         self._lines = lines
         self._isTruncation = isTruncation
         self._textInsets = container.insets
-        
+
         if lineOrigins != nil {
             free(lineOrigins)
         }
     }
 
-    
-    
+
+
     public override init(){
         super.init()
     }
-    
+
     func draw(context: CGContext, rect: CGRect, point:CGPoint, targetView: UIView, targetLayer: CALayer) {
-      // self.attributedText .draw(in: CGRect.init(x: 0, y: 0, width: 200, height: 200))
+        // self.attributedText .draw(in: CGRect.init(x: 0, y: 0, width: 200, height: 200))
         var cPoint = point
         cPoint.x += _textInsets.left
         cPoint.y += _textInsets.top
         self.drawText(layout: self, context: context, size: rect.size, point: cPoint)
         self.drawAttachment(layout: self, context: context, size: rect.size, point: cPoint, targetView: targetView, targetLayer: targetLayer)
     }
-    
+
     func drawText(layout: LHTextLayout, context: CGContext, size: CGSize, point: CGPoint) {
         context.saveGState()
-        
+
         context.scaleBy(x: 1, y: -1)
         context.translateBy(x: 0, y: -size.height)
         context.textPosition = point
@@ -410,39 +444,39 @@ class LHTextLayout: NSObject {
             let line = lines[i]
             let posX = line.position.x + point.x
             let posY = (size.height - line.position.y - point.y)
-            
+
             let ctRuns = CTLineGetGlyphRuns(line.ctLine!)
             for k in 0 ..< CFArrayGetCount(ctRuns) {
                 let runRawPointer = CFArrayGetValueAtIndex(ctRuns, k)
                 let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
                 context.textMatrix = CGAffineTransform.identity
                 context.textPosition = CGPoint.init(x: posX, y: posY)
-                
+
                 self.drawRun(context: context, line: line, run: run, size: size, isVertical: layout.textContainer.verticalForm)
 
             }
-            
+
         }
-        
+
         context.restoreGState()
     }
-    
+
     func drawRun(context: CGContext, line: LHTextLine, run: CTRun, size: CGSize, isVertical: Bool) {
-        
-                let runTextMatrix = CTRunGetTextMatrix(run)
-                let runTextMatrixIsID = runTextMatrix.isIdentity
-        
-                let attrs =  CTRunGetAttributes(run) as NSDictionary
+
+        let runTextMatrix = CTRunGetTextMatrix(run)
+        let runTextMatrixIsID = runTextMatrix.isIdentity
+
+        let attrs =  CTRunGetAttributes(run) as NSDictionary
 
         if !isVertical {
-                if !runTextMatrixIsID {
-                    context.saveGState()
-                    context.textMatrix = context.textMatrix.concatenating(runTextMatrix)
-                }
-                CTRunDraw(run, context, CFRangeMake(0, 0))
-                if  !runTextMatrixIsID {
-                    context.restoreGState()
-                }
+            if !runTextMatrixIsID {
+                context.saveGState()
+                context.textMatrix = context.textMatrix.concatenating(runTextMatrix)
+            }
+            CTRunDraw(run, context, CFRangeMake(0, 0))
+            if  !runTextMatrixIsID {
+                context.restoreGState()
+            }
         }else {
             if attrs[kCTFontAttributeName] == nil {
                 return
@@ -454,7 +488,7 @@ class LHTextLayout: NSObject {
             }
             let glyphs = UnsafeMutablePointer<CGGlyph>.allocate(capacity: glyphCount)
             let glyphPositions = UnsafeMutablePointer<CGPoint>.allocate(capacity: glyphCount)
-            
+
             CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs)
             CTRunGetPositions(run, CFRangeMake(0, 0), glyphPositions)
 
@@ -470,44 +504,55 @@ class LHTextLayout: NSObject {
             context.setFillColor(fillColor)
             if strokeWidth == nil {
                 context.setTextDrawingMode(.fill)
-                
+
             }else {
-//                let strokeColor = UIColor.black.cgColor
-//                context.setStrokeColor(strokeColor)
-//                let lineWidth = CTFontGetSize(runFont) * CGFloat(fabs(strokeWidth.floatValue * 0.01))
-//                
-//                context.setLineWidth(lineWidth)
-//                if strokeWidth.floatValue > 0 {
-//                    context.setTextDrawingMode(.stroke)
-//                }else{
-//                    context.setTextDrawingMode(.fillStroke)
-//                }
+                //                let strokeColor = UIColor.black.cgColor
+                //                context.setStrokeColor(strokeColor)
+                //                let lineWidth = CTFontGetSize(runFont) * CGFloat(fabs(strokeWidth.floatValue * 0.01))
+                //
+                //                context.setLineWidth(lineWidth)
+                //                if strokeWidth.floatValue > 0 {
+                //                    context.setTextDrawingMode(.stroke)
+                //                }else{
+                //                    context.setTextDrawingMode(.fillStroke)
+                //                }
             }
             if isVertical {
                 let runStrIdx = UnsafeMutablePointer<CFIndex>.allocate(capacity: glyphCount + 1)
-               
+
                 CTRunGetStringIndices(run, CFRangeMake(0, 0), runStrIdx)
                 let runStrRange = CTRunGetStringRange(run)
                 runStrIdx[glyphCount] = runStrRange.location + runStrRange.length
-               
+
                 let glyphAdvances = UnsafeMutablePointer<CGSize>.allocate(capacity: glyphCount)
                 CTRunGetAdvances(run, CFRangeMake(0, 0), glyphAdvances)
-                
+
                 let ascent = CTFontGetAscent(runFont)
                 let descent = CTFontGetDescent(runFont)
-              //  let glyphTransform = glyphTransformValue.cag
+                //  let glyphTransform = glyphTransformValue.cag
 
                 let range = CTRunGetStringRange(run)
 
                 for i in 0 ..< range.length {
 
-                  context.saveGState()
-                   
+                    context.saveGState()
+
                     context.textMatrix = CGAffineTransform.identity
 
-                    if false {
-                         context.rotate(by:CGFloat(-90 * M_PI / 180))
-                         context.textPosition = CGPoint.init(x: line.position.y - size.height + glyphPositions[i].x, y: line.position.x + 0 + glyphPositions[i].y)
+                    var shuzhi = false
+                    for sRange in line.verticalRotateRange {
+                        shuzhi =  NSLocationInRange(range.location + i, sRange)
+                        if shuzhi {
+                            break
+                        }
+                    }
+
+                    if  !shuzhi{
+                        context.rotate(by:CGFloat(-90 * M_PI / 180))
+                        let x = line.position.y - size.height + glyphPositions[i].x 
+                        let y = line.position.x -  glyphPositions[i].y + size.width
+                        context.textPosition = CGPoint.init(x: x, y: y)
+
                     }else {
                         // CJK glyph, need rotated
                         let ofs = (ascent - descent) * 0.5
@@ -518,36 +563,36 @@ class LHTextLayout: NSObject {
                         context.textPosition = CGPoint.init(x: x, y: y)
                     }
 
-                        let cgFont = CTFontCopyGraphicsFont(runFont, nil)
-                        context.setFont(cgFont)
-                        context.setFontSize(CTFontGetSize(runFont))
-                        context.showGlyphs([glyphs[i]], at: [CGPoint.zero])
+                    let cgFont = CTFontCopyGraphicsFont(runFont, nil)
+                    context.setFont(cgFont)
+                    context.setFontSize(CTFontGetSize(runFont))
+                    context.showGlyphs([glyphs[i]], at: [CGPoint.zero])
 
                     context.restoreGState()
-                  
+
 
                 }
             }
-            
+
             context.restoreGState()
-            
+
         }
     }
-    
+
     func drawAttachment(layout: LHTextLayout, context: CGContext, size: CGSize, point: CGPoint, targetView: UIView, targetLayer: CALayer)  {
         for line in layout.lines {
             for i in 0 ..< line.attachments.count {
                 let ment = line.attachments[i]
-                
+
                 if ment.content == nil {
                     continue
                 }
                 let content = ment.content!
                 var rect = line.attachmentRects[i]
                 if layout.textContainer.verticalForm {
-                     rect.origin.x += size.width
+                    rect.origin.x += size.width
                 }
-               
+
                 rect = UIEdgeInsetsInsetRect(rect, ment.contentInsets)
                 rect = rect.standardized
                 rect.origin.x += point.x
@@ -569,13 +614,13 @@ class LHTextLayout: NSObject {
                     DispatchQueue.main.async {
                         targetView.addSubview(view)
                     }
-                   
+
                 }
             }
         }
     }
-    
-    
+
+
     func VerticalFormRotateCharacterSet() -> NSCharacterSet {
         let set = NSMutableCharacterSet.init()
         set.addCharacters(in: NSMakeRange(0x1100, 256))// Hangul Jamo
@@ -608,7 +653,7 @@ class LHTextLayout: NSObject {
         set.addCharacters(in: NSMakeRange(0xFF00, 240))// Halfwidth and Fullwidth Forms
         set.addCharacters(in: NSMakeRange(0x1F200, 256))// Enclosed Ideographic Supplement
         set.addCharacters(in: NSMakeRange(0x1F300, 768))// Enclosed Ideographic Supplement
-        
+
         set.addCharacters(in: NSMakeRange(0x1F600, 80))// Emoticons (Emoji)
         set.addCharacters(in: NSMakeRange(0x1F680, 128))// Transport and Map Symbols
         // See http://unicode-table.com/ for more information.
@@ -626,17 +671,17 @@ class LHTextLayout: NSObject {
 extension LHTextLayout {
     func glyphIndex(at point: CGPoint) -> Int {
         var point = point
-
+        
         point.y -= self.textInsets.top
         if textContainer.verticalForm {
             point.x -= (bounds.size.width - self.textInsets.right)
         }else{
             point.x -= self.textInsets.left
         }
-
+        
         for line in self.lines {
             if line.bounds.contains(point) {
-             return line.glyphIndex(at: point)
+                return line.glyphIndex(at: point)
             }
         }
         return NSNotFound

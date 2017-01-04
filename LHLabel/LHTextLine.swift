@@ -37,6 +37,7 @@ class LHTextLine: NSObject {
     private var _attachmentRects = Array<CGRect>()
 
     var row: Int = 0
+    var verticalRotateRange = Array<NSRange>()
 
     var ctLine: CTLine? {
         return _ctLine

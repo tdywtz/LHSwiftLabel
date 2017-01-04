@@ -8,6 +8,7 @@
 
 #import "UIFont+LH.h"
 #import <CoreText/CoreText.h>
+#import "LHLabel-Swift.h"
 
 @implementation UIFont (LH)
 
@@ -18,7 +19,7 @@
 
 + (void)asynchronouslySetFontName:(NSString *)fontName success:(void(^)(NSString *name))success
 {
-    
+
     UIFont* aFont = [UIFont fontWithName:fontName size:24];
     // If the font is already downloaded
     if (aFont && ([aFont.fontName compare:fontName] == NSOrderedSame || [aFont.familyName compare:fontName] == NSOrderedSame)) {
@@ -26,7 +27,7 @@
         success(fontName);
         return;
     }
-    
+
     // Create a dictionary with the font's PostScript name.
     NSMutableDictionary *attrs = [NSMutableDictionary dictionaryWithObjectsAndKeys:fontName, kCTFontNameAttribute, nil];
     

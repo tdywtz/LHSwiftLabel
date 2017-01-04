@@ -67,6 +67,12 @@ class MMLabel: UIView {
         textLayout = LHTextLayout.layout(size: UIScreen.main.bounds.size, text: attributedText)
     }
 
+//    override var frame: CGRect {
+//        didSet{
+//          textLayout.textContainer.size = frame.size
+//          textLayout.updateLayout(container: textLayout.textContainer)
+//        }
+//    }
    required  init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -93,17 +99,8 @@ class MMLabel: UIView {
         return textLayout.bounds.size
     }
 
-//    open override func layoutSubviews() {
-//       // super.layoutSubviews()
-//        if textLayout.bounds.size.equalTo(self.lh_size) {
-//            return
-//        }
-//        textLayout.textContainer.size = self.lh_size
-//        textLayout.updateLayout(container: textLayout.textContainer)
-//        
-//    }
-
     override func draw(_ rect: CGRect) {
+
         let context = UIGraphicsGetCurrentContext()
         if context != nil {
             var point = CGPoint.zero
