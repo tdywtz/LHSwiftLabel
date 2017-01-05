@@ -82,8 +82,8 @@ class LHTextAttachment: NSObject {
 
 class LHTextHighlight: NSObject {
     var tapAction: LHTextAction?
-
-
+    var highlightColor = UIColor.red
+    var textColor = UIColor.blue
 }
 
 class LHTextAttibute: NSObject {

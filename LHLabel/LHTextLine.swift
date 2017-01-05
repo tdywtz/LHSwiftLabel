@@ -255,7 +255,7 @@ class LHTextLine: NSObject {
                 }
 
                 let rect = CGRect.init(origin: point, size: size)
-
+print("\(rect)")
                 if rect.contains(position) {
                     glyphIndex = range.location + k
                     break

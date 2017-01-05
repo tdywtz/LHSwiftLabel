@@ -679,12 +679,12 @@ extension NSMutableAttributedString{
         ac.bounds = frame
         return NSMutableAttributedString.attribute(attchment: ac)
     }
-
 }
 
 extension NSMutableAttributedString {
     func lh_set(textHighlight: LHTextHighlight, range: NSRange) {
         self.lh_setAttribute(attributeName: LHTextHighlightAttributeName, value: textHighlight, range: range)
+        self.setLh_color(color: textHighlight.textColor, range: range)
     }
     
 //    func lh_set(attachment: LHTextAttachment, range: NSRange) {

@@ -17,12 +17,13 @@ class MMLabel: UIView {
             setNeedsDisplay()
         }
     }
+    var textContainer = LHTextContainer()
+
 
     var attributedText = NSAttributedString() {
         didSet {
-            
             innerText = attributedText.mutableCopy() as! NSMutableAttributedString
-            textLayout.update(attributedText: attributedText)
+            textLayout = LHTextLayout.layout(container: textContainer, text: attributedText)
             setNeedsDisplay()
         }
     }
@@ -35,25 +36,25 @@ class MMLabel: UIView {
 
     var verticalForm = false {
         didSet {
-            textLayout.textContainer.verticalForm = verticalForm
+            textContainer.verticalForm = verticalForm
         }
     }
 
     var maximumNumberOfRows: Int = 0 {
         didSet {
-            textLayout.textContainer.maximumNumberOfRows = maximumNumberOfRows
+            textContainer.maximumNumberOfRows = maximumNumberOfRows
         }
     }
 
     var exclusionPaths: [UIBezierPath] = [] {
         didSet {
-            textLayout.textContainer.exclusionPaths = exclusionPaths
+            textContainer.exclusionPaths = exclusionPaths
         }
     }
 
     var insets = UIEdgeInsets() {
         didSet {
-            textLayout.textContainer.insets = insets
+            textContainer.insets = insets
         }
     }
 
@@ -64,38 +65,34 @@ class MMLabel: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        textLayout = LHTextLayout.layout(size: UIScreen.main.bounds.size, text: attributedText)
+        textContainer.size = frame.size
     }
 
-//    override var frame: CGRect {
-//        didSet{
-//          textLayout.textContainer.size = frame.size
-//          textLayout.updateLayout(container: textLayout.textContainer)
-//        }
-//    }
-   required  init?(coder aDecoder: NSCoder) {
+
+    required  init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
     // MARK: - Auto layout
     open override var intrinsicContentSize: CGSize {
         if verticalForm {
-          textLayout.textContainer.size = CGSize.init(width: maxLayoutHeight, height: preferredMaxLayoutWidth)
+            textContainer.size = CGSize.init(width: maxLayoutHeight, height: preferredMaxLayoutWidth)
         }else {
-            textLayout.textContainer.size = CGSize.init(width: preferredMaxLayoutWidth, height: maxLayoutHeight)
+            textContainer.size = CGSize.init(width: preferredMaxLayoutWidth, height: maxLayoutHeight)
         }
 
-        textLayout.updateLayout(container: textLayout.textContainer);
+        textLayout = LHTextLayout.layout(container: textContainer, text: innerText);
         return textLayout.bounds.size
     }
 
     open override func sizeThatFits(_ size: CGSize) -> CGSize {
         if verticalForm {
-             textLayout.textContainer.size = CGSize.init(width: maxLayoutHeight, height:size.height)
+             textContainer.size = CGSize.init(width: maxLayoutHeight, height:size.height)
         }else {
-             textLayout.textContainer.size = CGSize.init(width: size.width, height:maxLayoutHeight)
+             textContainer.size = CGSize.init(width: size.width, height:maxLayoutHeight)
         }
-        textLayout.updateLayout(container: textLayout.textContainer);
+        textLayout = LHTextLayout.layout(container: textContainer, text: innerText);
+ 
         return textLayout.bounds.size
     }
 
@@ -120,12 +117,15 @@ class MMLabel: UIView {
         case .began, .moved:
             if let element = touche(at: location) {
                 let matt = innerText.mutableCopy() as! NSMutableAttributedString
-                matt.setLh_color(color: UIColor.blue, range: element.range)
-                textLayout.update(attributedText: matt)
+                if element.value.isKind(of: LHTextHighlight.classForCoder()) {
+                 matt.setLh_color(color: (element.value as! LHTextHighlight).highlightColor, range: element.range)
+                }
+
+               textLayout = LHTextLayout.layout(container: textContainer, text: matt);
                 avoidSuperCall = true
             }else{
                 let att = innerText.copy() as! NSAttributedString
-                textLayout.update(attributedText: att)
+               textLayout = LHTextLayout.layout(container: textContainer, text: att);
 
             }
         case .ended:
@@ -140,11 +140,11 @@ class MMLabel: UIView {
                 
             }
             let att = innerText.copy() as! NSAttributedString
-            textLayout.update(attributedText: att)
+            textLayout = LHTextLayout.layout(container: textContainer, text: att);
             break
         case .cancelled:
             let att = innerText.copy() as! NSAttributedString
-            textLayout.update(attributedText: att)
+            textLayout = LHTextLayout.layout(container: textContainer, text: att);
             break
         case .stationary:
             break
@@ -194,7 +194,4 @@ class MMLabel: UIView {
         if onTouch(touch) { return }
         super.touchesEnded(touches, with: event)
     }
-    
-
-
 }

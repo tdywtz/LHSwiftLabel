@@ -128,26 +128,26 @@ class LHTextLayout: NSObject {
     }
 
     class  func layout(container: LHTextContainer, text: NSAttributedString) -> LHTextLayout {
-        let layout = LHTextLayout.init()
-        layout.layout(container: container, text: text, range: NSMakeRange(0, text.length))
 
-        return layout
+        return self.layout(container: container, text: text, range: NSRange.init(location: 0, length: text.length))
     }
 
-    func update(attributedText: NSAttributedString) {
-        let text = attributedText.copy() as? NSAttributedString
-        if text != nil {
-            _attributedText = text!
-            self.layout(container: self.textContainer, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
-        }
+//    func update(attributedText: NSAttributedString) {
+//        let text = attributedText.copy() as? NSAttributedString
+//        if text != nil {
+//            _attributedText = text!
+//            self.layout(container: self.textContainer, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
+//        }
+//    }
+//    func updateLayout(container: LHTextContainer){
+//        self.layout(container: container, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
+//    }
+
+
+   class func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) -> LHTextLayout {
+    if text.length == 0 {
+        return LHTextLayout()
     }
-    func updateLayout(container: LHTextContainer){
-        self.layout(container: container, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
-    }
-
-
-    func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) {
-
         var rect = CGRect.zero
         var cgPath:CGPath?
         var cgPathBox = CGRect.zero
@@ -165,9 +165,11 @@ class LHTextLayout: NSObject {
 
         let text = text.copy() as! NSAttributedString
         let container = container.copy() as! LHTextContainer
+        let layout = LHTextLayout()
+
 
         if range.length + range.location > text.length {
-            return
+            return LHTextLayout()
         }
 
         rect = CGRect.init(origin: CGPoint(), size: container.size)
@@ -182,10 +184,9 @@ class LHTextLayout: NSObject {
             cgPath = CGPath.init(rect: rect, transform: nil)
 
         }else{
-            var mpath: CGMutablePath?
+           // var mpath: CGMutablePath?
             let rectPath = CGPath.init(rect: rect, transform: nil)
-
-            mpath = rectPath.mutableCopy()
+            var mpath = rectPath.mutableCopy()
 
             if mpath != nil {
                 for bezierPath in container.exclusionPaths {
@@ -332,8 +333,8 @@ class LHTextLayout: NSObject {
         }
 
         if vertical {
-            let rotateCharset = self.VerticalFormRotateCharacterSet()
-            let rotateMoveCharset = self.VerticalFormRotateAndMoveCharacterSet()
+            let rotateCharset = layout.VerticalFormRotateCharacterSet()
+            let rotateMoveCharset = layout.VerticalFormRotateAndMoveCharacterSet()
 
             let lineClosure:(LHTextLine) ->Void = { (line) -> Void in
                 if line.ctLine == nil {
@@ -360,7 +361,7 @@ class LHTextLayout: NSObject {
                     let font = runAttrs[kCTFontAttributeName] as! CTFont
                     let isColorGlyph: Bool = (CTFontGetSymbolicTraits(font).rawValue & CTFontSymbolicTraits.colorGlyphsTrait.rawValue) != 0
                     var prevIdx: Int = 0
-                    let layoutStr = self.attributedText.string as NSString
+                    let layoutStr = text.string as NSString
                     for g in 0 ..< glyphCount {
                         var glyphRotate = false
                         var glyphRotateMove = false
@@ -402,19 +403,21 @@ class LHTextLayout: NSObject {
         }
 
 
-        self._attributedText = text
-        self._textContainer = container
-        self._range = range
-        self._framesetter = ctSetter
-        self._frame = ctFrame
-        self._textBoundingRect = textBoundingRect
-        self._lines = lines
-        self._isTruncation = isTruncation
-        self._textInsets = container.insets
+        layout._attributedText = text
+        layout._textContainer = container
+        layout._range = range
+        layout._framesetter = ctSetter
+        layout._frame = ctFrame
+        layout._textBoundingRect = textBoundingRect
+        layout._lines = lines
+        layout._isTruncation = isTruncation
+        layout._textInsets = container.insets
 
         if lineOrigins != nil {
             free(lineOrigins)
         }
+
+       return layout
     }
 
 
