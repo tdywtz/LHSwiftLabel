@@ -17,12 +17,10 @@ class ViewController: UIViewController {
         let mm = MMLabel.init(frame: self.view.frame)
         mm.backgroundColor = UIColor.init(colorLiteralRed: 0.1, green: 0.5, blue: 0.8, alpha: 0.8)
        // mm.insets = UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10)
-       // mm.verticalForm = true
+        mm.verticalForm = true
         self.view.addSubview(mm)
 
-        mm.lh_left = 100;
-        mm.lh_top = 100;
-        mm.lh_size = CGSize.init(width: 200, height: 400)
+
 //        let p = self.buffer(frame: CGRect.init(x: 20, y: 20, width: 30, height: 30))
 //        mm.exclusionPaths = [p]
 //dfasdf沧海月明珠有泪，蓝田日暖玉生烟，此情可待成追忆，只是当时已惘
@@ -38,13 +36,13 @@ class ViewController: UIViewController {
         }
         att.lh_set(textHighlight: hi, range: NSRange.init(location: 0, length: 5))
         mm.attributedText = att
-        mm.sizeToFit()
+     //   mm.sizeToFit()
  
-//        UIFont.asynchronouslySetFontName(UIFont.fontNameSTXingkai_SC_Bold()) { (name) in
-//            att.lh_font = UIFont.init(name: name!, size: 28)
-//            mm.attributedText = att
-//            mm.sizeToFit()
-//        }
+        UIFont.asynchronouslySetFontName(UIFont.fontNameSTXingkai_SC_Bold()) { (name) in
+            att.lh_font = UIFont.init(name: name!, size: 28)
+            mm.attributedText = att
+          //  mm.sizeToFit()
+        }
         return
     }
 

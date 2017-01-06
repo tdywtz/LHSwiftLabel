@@ -23,6 +23,7 @@ class MMLabel: UIView {
     var attributedText = NSAttributedString() {
         didSet {
             innerText = attributedText.mutableCopy() as! NSMutableAttributedString
+            textContainer.size = frame.size
             textLayout = LHTextLayout.layout(container: textContainer, text: attributedText)
             setNeedsDisplay()
         }
@@ -100,17 +101,23 @@ class MMLabel: UIView {
 
         let context = UIGraphicsGetCurrentContext()
         if context != nil {
-            var point = CGPoint.zero
-            if textLayout.bounds.height < rect.height {
-                point.y = (rect.height - textLayout.bounds.height)/2
-            }
-          textLayout.draw(context: context!, rect: rect, point: point, targetView: self, targetLayer: self.layer)
+            let point = middlePoint(rect: rect)
+            textLayout.draw(context: context!, rect: rect, point: point, targetView: self, targetLayer: self.layer)
         }
+    }
+
+    func middlePoint(rect: CGRect) -> CGPoint {
+        var point = CGPoint.zero
+        if textLayout.bounds.height < rect.height {
+            point.y = (rect.height - textLayout.bounds.height)/2
+        }
+        return point
     }
 
     // MARK: - touch events
     func onTouch(_ touch: UITouch) -> Bool {
-        let location = touch.location(in: self)
+        var location = touch.location(in: self)
+        location.y -= middlePoint(rect: bounds).y
         var avoidSuperCall = false
 
         switch touch.phase {

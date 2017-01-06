@@ -251,7 +251,7 @@ class LHTextLine: NSObject {
                 }else {
                     point.x = self.position.x + glyphPositions[k].x
                     point.y = self.position.y  - ascent + descent
-                    size = CGSize.init(width: glyphAdvances[i].width + 1, height: ascent + descent)
+                    size = CGSize.init(width: glyphAdvances[i].width, height: ascent + descent)
                 }
 
                 let rect = CGRect.init(origin: point, size: size)
@@ -267,6 +267,7 @@ print("\(rect)")
             glyphPositions.deallocate(capacity: glyphCount)
             glyphAdvances.deallocate(capacity: glyphCount)
         }
+        print(glyphIndex)
         return glyphIndex
     }
 }
