@@ -14,7 +14,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
 
-        let mm = MMLabel.init(frame: self.view.frame)
+        let mm = MMLabel.init(frame: CGRect.init(x: 100, y: 100, width: 100, height: 100))
         mm.backgroundColor = UIColor.init(colorLiteralRed: 0.1, green: 0.5, blue: 0.8, alpha: 0.8)
        // mm.insets = UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10)
         mm.verticalForm = true
@@ -38,11 +38,11 @@ class ViewController: UIViewController {
         mm.attributedText = att
      //   mm.sizeToFit()
  
-        UIFont.asynchronouslySetFontName(UIFont.fontNameSTXingkai_SC_Bold()) { (name) in
-            att.lh_font = UIFont.init(name: name!, size: 28)
-            mm.attributedText = att
-          //  mm.sizeToFit()
-        }
+//        UIFont.asynchronouslySetFontName(UIFont.fontNameSTXingkai_SC_Bold()) { (name) in
+//            att.lh_font = UIFont.init(name: name!, size: 28)
+//            mm.attributedText = att
+//            mm.sizeToFit()
+//        }
         return
     }
 

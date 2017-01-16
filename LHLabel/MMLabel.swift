@@ -118,6 +118,7 @@ class MMLabel: UIView {
     func onTouch(_ touch: UITouch) -> Bool {
         var location = touch.location(in: self)
         location.y -= middlePoint(rect: bounds).y
+        location.x -= frame.size.width
         var avoidSuperCall = false
 
         switch touch.phase {
@@ -162,6 +163,7 @@ class MMLabel: UIView {
 
     fileprivate func touche(at location: CGPoint) -> LHElementResult? {
       let glyphIndex =   textLayout.glyphIndex(at: location)
+        
         if glyphIndex != NSNotFound {
             var range = NSRange()
             let highlight = textLayout.attributedText.attribute(LHTextHighlightAttributeName, at: glyphIndex, effectiveRange: &range) as? NSObject

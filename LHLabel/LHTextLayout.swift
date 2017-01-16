@@ -542,15 +542,15 @@ class LHTextLayout: NSObject {
 
                     context.textMatrix = CGAffineTransform.identity
 
-                    var shuzhi = false
+                    var CJK = false
                     for sRange in line.verticalRotateRange {
-                        shuzhi =  NSLocationInRange(range.location + i, sRange)
-                        if shuzhi {
+                        CJK =  NSLocationInRange(range.location + i, sRange)
+                        if CJK {
                             break
                         }
                     }
 
-                    if  !shuzhi{
+                    if  !CJK{
                         context.rotate(by:CGFloat(-90 * M_PI / 180))
                         let x = line.position.y - size.height + glyphPositions[i].x 
                         let y = line.position.x -  glyphPositions[i].y + size.width
@@ -674,15 +674,16 @@ class LHTextLayout: NSObject {
 extension LHTextLayout {
     func glyphIndex(at point: CGPoint) -> Int {
         var point = point
-        
+
         point.y -= self.textInsets.top
         if textContainer.verticalForm {
-            point.x -= (bounds.size.width - self.textInsets.right)
+            point.x -= self.textInsets.right
         }else{
             point.x -= self.textInsets.left
         }
-        
+    
         for line in self.lines {
+
             if line.bounds.contains(point) {
                 return line.glyphIndex(at: point)
             }

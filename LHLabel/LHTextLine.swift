@@ -241,13 +241,27 @@ class LHTextLine: NSObject {
                 var size = CGSize.zero
 
                 if vertical {
-                   // CJK glyph, need rotated
-                    let ofs = (ascent - descent) * 0.5
-                    let w = glyphAdvances[i].width * 0.5
-                    let x = self.position.x + glyphPositions[k].y - (descent)/2 + size.width
-                    let y = -self.position.y  + size.height - glyphPositions[k].x - (ofs + w) + ascent
-                    point = CGPoint.init(x: x, y: -y)
-                    size = CGSize.init(width: ascent + descent, height: glyphAdvances[i].width)
+
+                    var CJK = false
+                    for sRange in self.verticalRotateRange {
+                        CJK =  NSLocationInRange(range.location + i, sRange)
+                        if CJK {
+                            break
+                        }
+                    }
+                         // CJK glyph, need rotated
+                    if CJK {
+                        let ofs = (ascent - descent) * 0.5
+                        let w = glyphAdvances[k].width * 0.5
+                        let x = self.position.x + glyphPositions[k].y - (descent)/2 + size.width
+                        let y = -self.position.y  + size.height - glyphPositions[k].x - (ofs + w) + ascent
+                        point = CGPoint.init(x: x, y: -y)
+                        size = CGSize.init(width: ascent + descent, height: glyphAdvances[i].width)
+                    }else {
+                       point.y = self.position.y - size.height + glyphPositions[k].x
+                       point.x = self.position.x -  glyphPositions[k].y + size.width
+                       size = CGSize.init(width: ascent + descent, height: glyphAdvances[k].width)
+                    }
                 }else {
                     point.x = self.position.x + glyphPositions[k].x
                     point.y = self.position.y  - ascent + descent
