@@ -112,4 +112,8 @@
     });
 }
 
++ (NSString *)YYTextTruncationToken{
+    return @"\u2026";
+}
+
 @end

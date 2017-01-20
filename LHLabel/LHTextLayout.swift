@@ -62,9 +62,12 @@ class LHTextLayout: NSObject {
     private var _isTruncation = false
     private var maximumNumberOfRows: Int = 0
 
+    var truncationTokenLine: LHTextLine?
+
     var textContainer: LHTextContainer {
         return _textContainer
     }
+
 
     var attributedText: NSAttributedString {
         return _attributedText
@@ -117,7 +120,7 @@ class LHTextLayout: NSObject {
         copy._textContainer = _textContainer
         copy._textInsets = _textInsets
         copy.maximumNumberOfRows = maximumNumberOfRows
-
+        copy.truncationTokenLine = truncationTokenLine
         return copy
     }
 
@@ -132,22 +135,22 @@ class LHTextLayout: NSObject {
         return self.layout(container: container, text: text, range: NSRange.init(location: 0, length: text.length))
     }
 
-//    func update(attributedText: NSAttributedString) {
-//        let text = attributedText.copy() as? NSAttributedString
-//        if text != nil {
-//            _attributedText = text!
-//            self.layout(container: self.textContainer, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
-//        }
-//    }
-//    func updateLayout(container: LHTextContainer){
-//        self.layout(container: container, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
-//    }
+    //    func update(attributedText: NSAttributedString) {
+    //        let text = attributedText.copy() as? NSAttributedString
+    //        if text != nil {
+    //            _attributedText = text!
+    //            self.layout(container: self.textContainer, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
+    //        }
+    //    }
+    //    func updateLayout(container: LHTextContainer){
+    //        self.layout(container: container, text: _attributedText, range: NSRange.init(location: 0, length: _attributedText.length))
+    //    }
 
 
-   class func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) -> LHTextLayout {
-    if text.length == 0 {
-        return LHTextLayout()
-    }
+    class func layout(container: LHTextContainer, text: NSAttributedString, range: NSRange) -> LHTextLayout {
+        if text.length == 0 {
+            return LHTextLayout()
+        }
         var rect = CGRect.zero
         var cgPath:CGPath?
         var cgPathBox = CGRect.zero
@@ -159,6 +162,8 @@ class LHTextLayout: NSObject {
         var lineCount = Int(0)
         var lines = Array<LHTextLine>()
         var isTruncation = false
+        var TruncationTokenLine: LHTextLine?
+
         let vertical = container.verticalForm
 
         let maximumNumberOfRows: Int = container.maximumNumberOfRows
@@ -184,7 +189,7 @@ class LHTextLayout: NSObject {
             cgPath = CGPath.init(rect: rect, transform: nil)
 
         }else{
-           // var mpath: CGMutablePath?
+            // var mpath: CGMutablePath?
             let rectPath = CGPath.init(rect: rect, transform: nil)
             var mpath = rectPath.mutableCopy()
 
@@ -324,10 +329,29 @@ class LHTextLayout: NSObject {
 
                 if att != nil {
 
-                    att?.replaceCharacters(in: NSRange.init(location: att!.length - 1, length: 1), with: LHTextTruncationToken)
+                    let truncationToken = NSMutableAttributedString.init(string: LHTextTruncationToken)
+                    truncationToken.lh_font = att?.lh_font(index: att!.length - 1)
+                    truncationToken.lh_color = att?.lh_color(index: att!.length - 1)
+                    let truncationTokenLine = CTLineCreateWithAttributedString(truncationToken as CFAttributedString)
 
-                    let line = CTLineCreateWithAttributedString(att as! CFAttributedString)
-                    lines[lines.count - 1] = LHTextLine.line(ctLine: line, position: lastLine.position, vertical: false)
+                    att?.append(truncationToken)
+                    let ctLastLineExtend = CTLineCreateWithAttributedString(att! as CFAttributedString)
+                    var truncatedWidth = lastLine.bounds.width
+                    var cgPathRect = CGRect.zero
+                    if cgPath!.isRect(&cgPathRect) {
+                        if vertical {
+                            truncatedWidth = cgPathRect.size.height;
+                        } else {
+                            truncatedWidth = cgPathRect.size.width;
+                        }
+                    }
+
+                    let line = CTLineCreateTruncatedLine(ctLastLineExtend, Double(truncatedWidth), .end, truncationTokenLine)
+                    if line != nil {
+                        TruncationTokenLine = LHTextLine.line(ctLine: line!, position: lastLine.position, vertical: vertical)
+                        TruncationTokenLine?.row = lastLine.row;
+                        TruncationTokenLine?.setRange(range: lastLine.range)
+                    }
                 }
             }
         }
@@ -400,6 +424,10 @@ class LHTextLayout: NSObject {
             for line in lines {
                 lineClosure(line)
             }
+            if TruncationTokenLine != nil {
+                lineClosure(TruncationTokenLine!)
+
+            }
         }
 
 
@@ -412,12 +440,13 @@ class LHTextLayout: NSObject {
         layout._lines = lines
         layout._isTruncation = isTruncation
         layout._textInsets = container.insets
+        layout.truncationTokenLine = TruncationTokenLine
 
         if lineOrigins != nil {
             free(lineOrigins)
         }
 
-       return layout
+        return layout
     }
 
 
@@ -443,8 +472,11 @@ class LHTextLayout: NSObject {
         context.textPosition = point
 
         let lines = layout.lines
-        for i in 0 ..< lines.count {
-            let line = lines[i]
+        for i in 0 ..< layout.lines.count {
+            var line = lines[i]
+            if  line == layout.lines.last && truncationTokenLine != nil{
+                line = truncationTokenLine!
+            }
             let posX = line.position.x + point.x
             let posY = (size.height - line.position.y - point.y)
 
@@ -552,7 +584,7 @@ class LHTextLayout: NSObject {
 
                     if  !CJK{
                         context.rotate(by:CGFloat(-90 * M_PI / 180))
-                        let x = line.position.y - size.height + glyphPositions[i].x 
+                        let x = line.position.y - size.height + glyphPositions[i].x
                         let y = line.position.x -  glyphPositions[i].y + size.width
                         context.textPosition = CGPoint.init(x: x, y: y)
 
@@ -656,7 +688,7 @@ class LHTextLayout: NSObject {
         set.addCharacters(in: NSMakeRange(0xFF00, 240))// Halfwidth and Fullwidth Forms
         set.addCharacters(in: NSMakeRange(0x1F200, 256))// Enclosed Ideographic Supplement
         set.addCharacters(in: NSMakeRange(0x1F300, 768))// Enclosed Ideographic Supplement
-
+        
         set.addCharacters(in: NSMakeRange(0x1F600, 80))// Emoticons (Emoji)
         set.addCharacters(in: NSMakeRange(0x1F680, 128))// Transport and Map Symbols
         // See http://unicode-table.com/ for more information.
@@ -674,16 +706,16 @@ class LHTextLayout: NSObject {
 extension LHTextLayout {
     func glyphIndex(at point: CGPoint) -> Int {
         var point = point
-
+        
         point.y -= self.textInsets.top
         if textContainer.verticalForm {
             point.x -= self.textInsets.right
         }else{
             point.x -= self.textInsets.left
         }
-    
+        
         for line in self.lines {
-
+            
             if line.bounds.contains(point) {
                 return line.glyphIndex(at: point)
             }

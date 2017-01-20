@@ -10,7 +10,7 @@ import UIKit
 
 public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
 public let  LHTextHighlightAttributeName = "LHTextHighlightAttributeName"
-public let  LHTextTruncationToken = "…"
+public let  LHTextTruncationToken = "\u{2026}"
 
 func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
 

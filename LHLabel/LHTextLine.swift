@@ -89,6 +89,10 @@ class LHTextLine: NSObject {
     }
 
 
+    func setRange(range: NSRange) {
+        _range = range;
+    }
+    
     func setting(line: CTLine) {
         let width = CTLineGetTypographicBounds(line, &_ascent, &_descent, &_leading)
         _lineWidth = CGFloat(width)
@@ -269,7 +273,7 @@ class LHTextLine: NSObject {
                 }
 
                 let rect = CGRect.init(origin: point, size: size)
-print("\(rect)")
+
                 if rect.contains(position) {
                     glyphIndex = range.location + k
                     break

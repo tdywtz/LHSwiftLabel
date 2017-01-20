@@ -57,8 +57,7 @@ extension NSMutableAttributedString{
     ///*3. 该属性所对应的值是一个 UIColor 对象。该属性用于指定一段文本的字体颜色。如果不指定该属性，则默认为黑色。
     var lh_color: UIColor? {
         get {
-            var index = 0
-            return self.lh_color(index: &index);
+            return self.lh_color(index: 0);
         }
         set (newValue) {
             self.setLh_color(color: newValue, range: NSMakeRange(0, self.length))
@@ -262,7 +261,7 @@ extension NSMutableAttributedString{
     }
 
     ///3 返回指定位置字体颜色
-    func lh_color(index:inout Int) -> UIColor? {
+    func lh_color(index: Int) -> UIColor? {
 
         let color = self.lh_attribute(attributeName: NSForegroundColorAttributeName as String, index: index)
         return color as? UIColor

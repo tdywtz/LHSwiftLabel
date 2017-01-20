@@ -12,5 +12,5 @@
 //行楷
 + (NSString *)fontNameSTXingkai_SC_Bold;
 + (void)asynchronouslySetFontName:(NSString *)fontName success:(void(^)(NSString *name))success;
-
++ (NSString *)YYTextTruncationToken;
 @end
