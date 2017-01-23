@@ -10,6 +10,8 @@ import UIKit
 
 public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
 public let  LHTextHighlightAttributeName = "LHTextHighlightAttributeName"
+public let  LHTextUnderlineStyleAttributeName = "LHTextUnderlineStyleAttributeName"
+
 public let  LHTextTruncationToken = "\u{2026}"
 
 func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
@@ -65,7 +67,7 @@ class LHTextAttachment: NSObject {
 
     var width: CGFloat {
         return bounds.width
-     
+
     }
     
     override func copy() -> Any {
@@ -80,12 +82,42 @@ class LHTextAttachment: NSObject {
     
 }
 
+//MARK: LHTextHighlight
 class LHTextHighlight: NSObject {
     var tapAction: LHTextAction?
     var highlightColor = UIColor.red
     var textColor = UIColor.blue
+
 }
 
 class LHTextAttibute: NSObject {
 
 }
+
+class LHTextDecoration: NSObject {
+    var style = LHTextUnderlineStyle.styleNone
+    var width: CGFloat = 1
+    var color = UIColor.red
+
+    class func decoration(style: LHTextUnderlineStyle, width:CGFloat, color: UIColor) -> LHTextDecoration {
+        let one = LHTextDecoration.init()
+        one.style = style
+        one.width = width
+        one.color = color
+        return one
+    }
+}
+
+enum LHTextUnderlineStyle {
+
+    case styleNone
+
+    case styleSingle
+
+   // @available(iOS 7.0, *)
+    case styleThick
+
+   // @available(iOS 7.0, *)
+    case styleDouble
+}
+

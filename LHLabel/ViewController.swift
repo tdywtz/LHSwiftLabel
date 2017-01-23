@@ -17,7 +17,7 @@ class ViewController: UIViewController {
         let mm = MMLabel.init(frame: CGRect.init(x: 100, y: 100, width: 200, height: 200))
         mm.backgroundColor = UIColor.init(colorLiteralRed: 0.1, green: 0.5, blue: 0.8, alpha: 0.8)
        // mm.insets = UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10)
-        mm.verticalForm = true
+     //   mm.verticalForm = true
         self.view.addSubview(mm)
        // mm.maximumNumberOfRows = 1;
 
@@ -28,6 +28,8 @@ var text = "my Hart is go on 沧海月明珠有泪，蓝田日暖玉生烟，此
         let att = NSMutableAttributedString.init(string: text)
         att.lh_font = UIFont.systemFont(ofSize: 15)
         att.lh_color = UIColor.white
+        att.lh_lineSpacing = 5
+        att.lh_textDecoration = LHTextDecoration.decoration(style: .styleThick, width: 0.1, color: UIColor.blue)
        // att.insert(image: UIImage.init(named: "buffer"), frame: CGRect.init(x: 0, y: 0, width: 60, height: 30), index: 3)
 
 
@@ -39,11 +41,11 @@ var text = "my Hart is go on 沧海月明珠有泪，蓝田日暖玉生烟，此
         mm.attributedText = att
       //  mm.sizeToFit()
  
-//        UIFont.asynchronouslySetFontName(UIFont.fontNameSTXingkai_SC_Bold()) { (name) in
-//            att.lh_font = UIFont.init(name: name!, size: 28)
-//            mm.attributedText = att
-//            mm.sizeToFit()
-//        }
+        UIFont.asynchronouslySetFontName(UIFont.fontNameSTXingkai_SC_Bold()) { (name) in
+            att.lh_setFont(font: UIFont.init(name: name!, size: 28), range: NSRange.init(location: 0, length: 6))
+            mm.attributedText = att
+          //  mm.sizeToFit()
+        }
         return
     }
 

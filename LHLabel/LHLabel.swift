@@ -210,13 +210,13 @@ open class LHLabel: UILabel {
         case .began, .moved:
             if let element = touche(at: location) {
 
-                textStorage.setLh_color(color: selectedTextColor, range: selectedRange);
-                textStorage.setLh_color(color: selectedTextHighlightedColor, range: element.range)
+                textStorage.lh_setColor(color: selectedTextColor, range: selectedRange);
+                textStorage.lh_setColor(color: selectedTextHighlightedColor, range: element.range)
                 selectedRange = element.range
 
                 avoidSuperCall = true
             }else{
-                textStorage.setLh_color(color: selectedTextColor, range: selectedRange);
+                textStorage.lh_setColor(color: selectedTextColor, range: selectedRange);
 
             }
         case .ended:
@@ -225,11 +225,11 @@ open class LHLabel: UILabel {
                 delegate?.didSelect(element: element)
                 avoidSuperCall = true
             }
-            textStorage.setLh_color(color: selectedTextColor, range: selectedRange);
+            textStorage.lh_setColor(color: selectedTextColor, range: selectedRange);
 
             break
         case .cancelled:
-            textStorage.setLh_color(color: selectedTextColor, range: selectedRange);
+            textStorage.lh_setColor(color: selectedTextColor, range: selectedRange);
             break
         case .stationary:
             break
@@ -267,7 +267,7 @@ open class LHLabel: UILabel {
     //MARK: - 添加点击事件range
     public  func addValue(value: Any, range: NSRange) {
         textStorage.addAttribute(kLHTextRunAttributedName, value: value, range: range);
-        textStorage.setLh_color(color: selectedTextColor, range: range)
+        textStorage.lh_setColor(color: selectedTextColor, range: range)
 
         setNeedsDisplay()
     }

@@ -39,7 +39,7 @@ extension NSMutableAttributedString{
             return self.lh_font(index: 0);
         }
         set (newValue){
-            self.setLh_font(font: newValue, range: NSMakeRange(0, self.length))
+            self.lh_setFont(font: newValue, range: NSMakeRange(0, self.length))
         }
     }
 
@@ -50,7 +50,7 @@ extension NSMutableAttributedString{
         }
 
         set (newValue){
-            self.setLh_paragraphStyle(style: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setParagraphStyle(style: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -60,7 +60,7 @@ extension NSMutableAttributedString{
             return self.lh_color(index: 0);
         }
         set (newValue) {
-            self.setLh_color(color: newValue, range: NSMakeRange(0, self.length))
+            self.lh_setColor(color: newValue, range: NSMakeRange(0, self.length))
         }
     }
 
@@ -70,7 +70,7 @@ extension NSMutableAttributedString{
             return self.lh_backGroundColor(at: 0)
         }
         set (newValue){
-            self.setLh_backGroundColor(color: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setBackGroundColor(color: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -80,7 +80,7 @@ extension NSMutableAttributedString{
             return self.lh_ligature(at: 0)
         }
         set (newValue) {
-            self.setLh_ligature(ligature: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setLigature(ligature: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -90,7 +90,7 @@ extension NSMutableAttributedString{
             return self.lh_kern(index: 0)
         }
         set (newValue) {
-            self.setLh_kern(kern: newValue, range: NSMakeRange(0, self.length))
+            self.lh_setKern(kern: newValue, range: NSMakeRange(0, self.length))
         }
     }
 
@@ -100,7 +100,7 @@ extension NSMutableAttributedString{
             return self.lh_strikethroughStyle(at: 0)
         }
         set (newValue) {
-            self.setLh_strikethroughStyle(style: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setStrikethroughStyle(style: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -110,7 +110,7 @@ extension NSMutableAttributedString{
             return self.lh_strikethroughColor(at: 0)
         }
         set (newValue){
-            self.setLh_strikethroughColor(color: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setStrikethroughColor(color: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -120,7 +120,7 @@ extension NSMutableAttributedString{
             return self.lh_underlineStyle(at: 0)
         }
         set (newValue) {
-            self.setLh_underlineStyle(style: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setUnderlineStyle(style: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -130,7 +130,7 @@ extension NSMutableAttributedString{
             return self.lh_underlineColor(at: 0)
         }
         set (newValue){
-            self.setLh_underlineColor(color: newValue, range: NSRange.init(location: 0, length: length))
+            self.lh_setUnderlineColor(color: newValue, range: NSRange.init(location: 0, length: length))
         }
     }
 
@@ -141,7 +141,7 @@ extension NSMutableAttributedString{
             return self.lh_strokeWidth(at: 0)
         }
         set (newValue){
-            self.setLh_strokeWidth(width: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setStrokeWidth(width: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -151,7 +151,7 @@ extension NSMutableAttributedString{
             return self.lh_strokeColor(at: 0)
         }
         set (newValue) {
-            self.setLh_strokeColor(color: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setStrokeColor(color: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -161,7 +161,7 @@ extension NSMutableAttributedString{
             return self.lh_shadow(at: 0)
         }
         set (newValue){
-            self.setLh_shadow(shadow: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setShadow(shadow: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
     //* 14. NSTextEffectAttributeName ->设置文本特殊效果，取值为 NSString 对象，目前只有图版印刷效果可用
@@ -170,7 +170,7 @@ extension NSMutableAttributedString{
             return self.lh_textEffect(at: 0)
         }
         set (newValue) {
-            self.setLh_textEffect(textEffect: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setTextEffect(textEffect: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
     //* 15. NSBaselineOffsetAttributeName ->设置基线偏移值，取值为 NSNumber （float）,正值上偏，负值下偏
@@ -179,7 +179,7 @@ extension NSMutableAttributedString{
             return self.lh_baselineOffset(at: 0)
         }
         set (newValue) {
-            self.setLh_baselineOffset(baselineOffset: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setBaselineOffset(baselineOffset: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -189,7 +189,7 @@ extension NSMutableAttributedString{
             return self.lh_obliqueness(at: 0)
         }
         set (newValue) {
-            self.setLh_obliqueness(obliqueness: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setObliqueness(obliqueness: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -199,7 +199,7 @@ extension NSMutableAttributedString{
             return self.lh_expansion(at: 0)
         }
         set (newValue) {
-            self.setLh_expansion(expansion: newValue, range: NSRange.init(location: 0, length: self.length))
+            self.lh_setExpansion(expansion: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -228,8 +228,8 @@ extension NSMutableAttributedString{
         get {
             return self.lh_link(at: 0)
         }
-        set (newValue) {
-            self.setLh_link(link: newValue, range: NSRange.init(location: 0, length: self.length))
+        set  {
+            self.lh_setLink(link: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 
@@ -238,8 +238,17 @@ extension NSMutableAttributedString{
         get {
             return self.lh_attachment(at: 0)
         }
-        set (newValue) {
-            self.setLh_attachment(attachment: newValue, range: NSRange.init(location: 0, length: self.length))
+        set  {
+            self.lh_setAttachment(attachment: newValue, range: NSRange.init(location: 0, length: self.length))
+        }
+    }
+
+    var lh_textDecoration: LHTextDecoration? {
+        get {
+            return lh_textDecoration(at: 0)
+        }
+        set {
+            lh_setTextDecoration(decoration: newValue, range: NSRange.init(location: 0, length: self.length))
         }
     }
 }
@@ -348,6 +357,10 @@ extension NSMutableAttributedString{
         return self.lh_attribute(attributeName: NSAttachmentAttributeName, index: index) as? NSTextAttachment
     }
 
+    func lh_textDecoration(at index: Int) -> LHTextDecoration? {
+        return lh_attribute(attributeName: LHTextUnderlineStyleAttributeName, index: index) as? LHTextDecoration
+    }
+
     ///返回指定位置字符对应富文本属性值
     func lh_attribute(attributeName: String, index: Int) -> Any? {
         if self.length == 0 {
@@ -365,87 +378,87 @@ extension NSMutableAttributedString{
 //MARK:设置属性
 extension NSMutableAttributedString{
     ///1 设置字体
-    func setLh_font(font: UIFont?, range: NSRange) -> Void {
+    func lh_setFont(font: UIFont?, range: NSRange) -> Void {
 
         self.lh_setAttribute(attributeName: NSFontAttributeName, value: font, range: range)
     }
 
     //2 短落属性
-    func setLh_paragraphStyle(style: NSParagraphStyle?, range: NSRange) -> Void {
+    func lh_setParagraphStyle(style: NSParagraphStyle?, range: NSRange) -> Void {
         self.lh_setAttribute(attributeName: NSParagraphStyleAttributeName, value: style, range: range)
     }
 
     ///3 设置字体颜色
-    func setLh_color(color: UIColor?, range: NSRange) -> Void {
+    func lh_setColor(color: UIColor?, range: NSRange) -> Void {
         self.lh_setAttribute(attributeName: NSForegroundColorAttributeName as String, value: color, range: range)
     }
 
     ///4 背景颜色
-    func setLh_backGroundColor(color: UIColor?, range: NSRange) {
+    func lh_setBackGroundColor(color: UIColor?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSBackgroundColorAttributeName, value: color, range: range)
     }
 
     ///5 连体
-    func setLh_ligature(ligature: NSNumber?, range: NSRange) {
+    func lh_setLigature(ligature: NSNumber?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSLigatureAttributeName, value: ligature, range: range)
     }
     ///6 设置字距
-    func setLh_kern(kern: NSNumber?, range: NSRange) -> Void {
+    func lh_setKern(kern: NSNumber?, range: NSRange) -> Void {
         self.lh_setAttribute(attributeName: NSKernAttributeName as String, value: kern, range: range)
     }
 
     ///7 删除线
-    func setLh_strikethroughStyle(style: NSUnderlineStyle?, range: NSRange) {
+    func lh_setStrikethroughStyle(style: NSUnderlineStyle?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSStrikethroughStyleAttributeName, value: style?.hashValue, range: range)
     }
 
     ///8 删除先颜色
-    func setLh_strikethroughColor(color: UIColor?, range: NSRange) {
+    func lh_setStrikethroughColor(color: UIColor?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSStrikethroughColorAttributeName, value: color, range: range)
     }
 
     //9 下划线
-    func setLh_underlineStyle(style: NSUnderlineStyle, range: NSRange) {
+    func lh_setUnderlineStyle(style: NSUnderlineStyle, range: NSRange) {
         self.lh_setAttribute(attributeName: NSUnderlineStyleAttributeName, value: (style.hashValue), range: range)
     }
 
     //10 下划线颜色
-    func setLh_underlineColor(color: UIColor?, range: NSRange) {
+    func lh_setUnderlineColor(color: UIColor?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSUnderlineColorAttributeName, value: color, range: range)
     }
 
     //11 绘制线宽
-    func setLh_strokeWidth(width: NSNumber?, range: NSRange) {
+    func lh_setStrokeWidth(width: NSNumber?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSStrokeWidthAttributeName, value: width, range: range)
     }
 
     //* 12. NSStrokeColorAttributeName ->填充部分颜色，不是字体颜色，取值为 UIColor 对象
-    func setLh_strokeColor(color: UIColor?, range: NSRange) {
+    func lh_setStrokeColor(color: UIColor?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSStrokeColorAttributeName, value: color, range: range)
     }
 
     ///13 文字阴影
-    func setLh_shadow(shadow: NSShadow?, range: NSRange) {
+    func lh_setShadow(shadow: NSShadow?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSShadowAttributeName, value: shadow, range: range)
     }
 
     //* 14. NSTextEffectAttributeName ->设置文本特殊效果，取值为 NSString 对象，目前只有图版印刷效果可用
-    func setLh_textEffect(textEffect: NSString?, range: NSRange) {
+    func lh_setTextEffect(textEffect: NSString?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSTextEffectAttributeName, value: textEffect, range: range)
     }
 
     //* 15. NSBaselineOffsetAttributeName ->设置基线偏移值，取值为 NSNumber （float）,正值上偏，负值下偏
-    func setLh_baselineOffset(baselineOffset: NSNumber?, range: NSRange) {
+    func lh_setBaselineOffset(baselineOffset: NSNumber?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSBaselineOffsetAttributeName, value: baselineOffset, range: range)
     }
 
     //* 16. NSObliquenessAttributeName ->设置字形倾斜度，取值为 NSNumber （float）,正值右倾，负值左倾
-    func setLh_obliqueness(obliqueness: NSNumber?, range: NSRange) {
+    func lh_setObliqueness(obliqueness: NSNumber?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSObliquenessAttributeName, value: obliqueness, range: range)
     }
 
     //* 17. NSExpansionAttributeName ->设置文本横向拉伸属性，取值为 NSNumber （float）,正值横向拉伸文本，负值横向压缩文本
-    func setLh_expansion(expansion: NSNumber?, range: NSRange) {
+    func lh_setExpansion(expansion: NSNumber?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSExpansionAttributeName, value: expansion, range: range)
     }
 
@@ -453,13 +466,18 @@ extension NSMutableAttributedString{
     //* 19. NSVerticalGlyphFormAttributeName ->设置文字排版方向，取值为 NSNumber 对象(整数)，0 表示横排文本，1 表示竖排文本
 
     //* 20. NSLinkAttributeName ->设置链接属性，点击后调用浏览器打开指定URL地址
-    func setLh_link(link: NSURL?, range: NSRange) {
+    func lh_setLink(link: NSURL?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSLinkAttributeName, value: link, range: range)
     }
 
     //* 21. NSAttachmentAttributeName ->设置文本附件,取值为NSTextAttachment对象,常用于文字图片混排
-    func setLh_attachment(attachment: NSTextAttachment?, range: NSRange) {
+    func lh_setAttachment(attachment: NSTextAttachment?, range: NSRange) {
         self.lh_setAttribute(attributeName: NSAttachmentAttributeName, value: attachment, range: range)
+    }
+
+    ///line
+    func lh_setTextDecoration(decoration: LHTextDecoration?, range: NSRange) {
+        lh_setAttribute(attributeName: LHTextUnderlineStyleAttributeName, value: decoration, range: range)
     }
 
     //设置富文本属性
@@ -483,7 +501,7 @@ extension NSMutableAttributedString{
 extension NSMutableAttributedString {
     var lh_lineSpacing: CGFloat {
         get {
-           return self.lh_getParagraphStyle().lineSpacing
+            return self.lh_getParagraphStyle().lineSpacing
         }
         set {
             let paragraphStyle = self.lh_getParagraphStyle();
@@ -638,22 +656,22 @@ extension NSMutableAttributedString {
 
 //MARK:添加图片
 extension NSMutableAttributedString{
-    
+
     class func attribute(attchment: LHTextAttachment) -> NSMutableAttributedString {
-        
+
         var objectReplacementChar:unichar           = 0xFFFC;
         let objectReplacementString = NSString.init(characters: &objectReplacementChar, length: 1)
         let att = NSMutableAttributedString.init(string: objectReplacementString as String)
-        
-       // let attchment = attchment.copy() as! LHTextAttachment
-        
+
+        // let attchment = attchment.copy() as! LHTextAttachment
+
         let delegate = getRunDelegate(attachment: attchment, font: UIFont.systemFont(ofSize: 11))
         att.addAttribute(kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
         att.lh_setAttribute(attributeName: LHTextAttachmentAttributeName, value: attchment, range: NSRange.init(location: 0, length: 1))
-        
+
         return att
     }
-    
+
     func add(image: UIImage?, frame: CGRect, range: NSRange) -> Void {
         let attribute = self.attribute(image: image, frame: frame)
         self.replaceCharacters(in: range, with: attribute)
@@ -683,12 +701,12 @@ extension NSMutableAttributedString{
 extension NSMutableAttributedString {
     func lh_set(textHighlight: LHTextHighlight, range: NSRange) {
         self.lh_setAttribute(attributeName: LHTextHighlightAttributeName, value: textHighlight, range: range)
-        self.setLh_color(color: textHighlight.textColor, range: range)
+        self.lh_setColor(color: textHighlight.textColor, range: range)
     }
     
-//    func lh_set(attachment: LHTextAttachment, range: NSRange) {
-//        self.lh_setAttribute(attributeName: LHTextAttachmentAttributeName, value: attachment, range: range)
-//    }
+    //    func lh_set(attachment: LHTextAttachment, range: NSRange) {
+    //        self.lh_setAttribute(attributeName: LHTextAttachmentAttributeName, value: attachment, range: range)
+    //    }
 }
 
 

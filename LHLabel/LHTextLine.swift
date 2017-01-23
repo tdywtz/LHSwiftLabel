@@ -36,8 +36,11 @@ class LHTextLine: NSObject {
     private var _attachmentRanges = Array<NSRange>()
     private var _attachmentRects = Array<CGRect>()
 
+    var index: Int = 0
     var row: Int = 0
-    var verticalRotateRange = Array<NSRange>()
+    var runRanges = Array<Array<LHTextRotateRange>>()
+    var lineAttributeText: NSAttributedString?
+
 
     var ctLine: CTLine? {
         return _ctLine
@@ -88,10 +91,6 @@ class LHTextLine: NSObject {
         return _attachmentRects
     }
 
-
-    func setRange(range: NSRange) {
-        _range = range;
-    }
     
     func setting(line: CTLine) {
         let width = CTLineGetTypographicBounds(line, &_ascent, &_descent, &_leading)
@@ -190,7 +189,6 @@ class LHTextLine: NSObject {
                 continue
             }
 
-
             let glyphs = UnsafeMutablePointer<CGGlyph>.allocate(capacity: glyphCount)
             let glyphPositions = UnsafeMutablePointer<CGPoint>.allocate(capacity: glyphCount)
 
@@ -237,8 +235,9 @@ class LHTextLine: NSObject {
                 }
                 continue
             }
-
+         //else
             let range = CTRunGetStringRange(run)
+            let runRanges = self.runRanges[i]
             for k in 0 ..<  range.length{
 
                 var point = CGPoint.zero
@@ -247,9 +246,10 @@ class LHTextLine: NSObject {
                 if vertical {
 
                     var CJK = false
-                    for sRange in self.verticalRotateRange {
-                        CJK =  NSLocationInRange(range.location + i, sRange)
-                        if CJK {
+                    for sRange in runRanges {
+
+                        if NSLocationInRange(sRange.range.location + i, sRange.range) {
+                             CJK = sRange.vertical
                             break
                         }
                     }
@@ -258,11 +258,11 @@ class LHTextLine: NSObject {
                         let ofs = (ascent - descent) * 0.5
                         let w = glyphAdvances[k].width * 0.5
                         let x = self.position.x + glyphPositions[k].y - (descent)/2 + size.width
-                        let y = -self.position.y  + size.height - glyphPositions[k].x - (ofs + w) + ascent
+                        let y = -self.position.y  + size.height - glyphPositions[k].x - (ofs + w) + ascent - descent
                         point = CGPoint.init(x: x, y: -y)
                         size = CGSize.init(width: ascent + descent, height: glyphAdvances[i].width)
                     }else {
-                       point.y = self.position.y - size.height + glyphPositions[k].x
+                       point.y = self.position.y - size.height + glyphPositions[k].x + descent - descent
                        point.x = self.position.x -  glyphPositions[k].y + size.width
                        size = CGSize.init(width: ascent + descent, height: glyphAdvances[k].width)
                     }
@@ -285,7 +285,12 @@ class LHTextLine: NSObject {
             glyphPositions.deallocate(capacity: glyphCount)
             glyphAdvances.deallocate(capacity: glyphCount)
         }
-        print(glyphIndex)
+   
         return glyphIndex
     }
+}
+//MARK: LHTextRotateRange
+class LHTextRotateRange: NSObject {
+    var range = NSRange()
+    var vertical = false
 }

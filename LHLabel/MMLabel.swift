@@ -126,7 +126,7 @@ class MMLabel: UIView {
             if let element = touche(at: location) {
                 let matt = innerText.mutableCopy() as! NSMutableAttributedString
                 if element.value.isKind(of: LHTextHighlight.classForCoder()) {
-                 matt.setLh_color(color: (element.value as! LHTextHighlight).highlightColor, range: element.range)
+                 matt.lh_setColor(color: (element.value as! LHTextHighlight).highlightColor, range: element.range)
                 }
 
                textLayout = LHTextLayout.layout(container: textContainer, text: matt);
