@@ -233,50 +233,49 @@ class LHTextLine: NSObject {
                    glyphIndex = CTRunGetStringRange(run).location
                    break
                 }
-                continue
-            }
-         //else
-            let range = CTRunGetStringRange(run)
-            let runRanges = self.runRanges[i]
-            for k in 0 ..<  range.length{
 
-                var point = CGPoint.zero
-                var size = CGSize.zero
+            }else {
+                let range = CTRunGetStringRange(run)
 
-                if vertical {
+                for k in 0 ..<  range.length{
 
-                    var CJK = false
-                    for sRange in runRanges {
+                    var point = CGPoint.zero
+                    var size = CGSize.zero
 
-                        if NSLocationInRange(sRange.range.location + i, sRange.range) {
-                             CJK = sRange.vertical
-                            break
+                    if vertical {
+                        let runRanges = self.runRanges[i]
+                        var CJK = false
+                        for sRange in runRanges {
+
+                            if NSLocationInRange(sRange.range.location + i, sRange.range) {
+                                CJK = sRange.vertical
+                                break
+                            }
                         }
-                    }
-                         // CJK glyph, need rotated
-                    if CJK {
-                        let ofs = (ascent - descent) * 0.5
-                        let w = glyphAdvances[k].width * 0.5
-                        let x = self.position.x + glyphPositions[k].y - (descent)/2 + size.width
-                        let y = -self.position.y  + size.height - glyphPositions[k].x - (ofs + w) + ascent - descent
-                        point = CGPoint.init(x: x, y: -y)
-                        size = CGSize.init(width: ascent + descent, height: glyphAdvances[i].width)
+                        // CJK glyph, need rotated
+                        if CJK {
+                            let ofs = (ascent - descent) * 0.5
+                            let w = glyphAdvances[k].width * 0.5
+                            let x = self.position.x + glyphPositions[k].y - (descent)/2 + size.width
+                            let y = -self.position.y  + size.height - glyphPositions[k].x - (ofs + w) + ascent - descent
+                            point = CGPoint.init(x: x, y: -y)
+                            size = CGSize.init(width: ascent + descent, height: glyphAdvances[i].width)
+                        }else {
+                            point.y = self.position.y - size.height + glyphPositions[k].x + descent - descent
+                            point.x = self.position.x -  glyphPositions[k].y + size.width
+                            size = CGSize.init(width: ascent + descent, height: glyphAdvances[k].width)
+                        }
                     }else {
-                       point.y = self.position.y - size.height + glyphPositions[k].x + descent - descent
-                       point.x = self.position.x -  glyphPositions[k].y + size.width
-                       size = CGSize.init(width: ascent + descent, height: glyphAdvances[k].width)
+                        point.x = self.position.x + glyphPositions[k].x
+                        point.y = self.position.y  - ascent + descent
+                        size = CGSize.init(width: glyphAdvances[i].width, height: ascent + descent)
                     }
-                }else {
-                    point.x = self.position.x + glyphPositions[k].x
-                    point.y = self.position.y  - ascent + descent
-                    size = CGSize.init(width: glyphAdvances[i].width, height: ascent + descent)
-                }
 
-                let rect = CGRect.init(origin: point, size: size)
-
-                if rect.contains(position) {
-                    glyphIndex = range.location + k
-                    break
+                    let rect = CGRect.init(origin: point, size: size)
+                    if rect.contains(position) {
+                        glyphIndex = range.location + k
+                        break
+                    }
                 }
             }
 

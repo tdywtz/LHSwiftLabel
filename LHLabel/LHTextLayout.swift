@@ -477,17 +477,16 @@ class LHTextLayout: NSObject {
     }
 
     func draw(context: CGContext, rect: CGRect, point:CGPoint, targetView: UIView, targetLayer: CALayer) {
-      
-        autoreleasepool {
+
+      autoreleasepool {
             var cPoint = point
             cPoint.x += _textInsets.left
-            cPoint.y += _textInsets.top
 
             drawTextDecoracotion(layout: self, context: context, size: rect.size, point: cPoint)
             drawText(layout: self, context: context, size: rect.size, point: cPoint)
             drawAttachment(layout: self, context: context, size: rect.size, point: cPoint, targetView: targetView, targetLayer: targetLayer)
-        }
 
+        }
     }
 
     func drawTextDecoracotion(layout: LHTextLayout, context: CGContext, size: CGSize, point: CGPoint) {
@@ -498,6 +497,7 @@ class LHTextLayout: NSObject {
 
         let isVertical = layout.textContainer.verticalForm
         //context.translateBy(x: <#T##CGFloat#>, y: <#T##CGFloat#>)
+
         for i in 0 ..< lines.count {
             var line = lines[i]
             if layout.truncationTokenLine != nil {
@@ -523,11 +523,11 @@ class LHTextLayout: NSObject {
                 var length: CGFloat = 0
 
                 if isVertical {
-                    underlineStart.x = line.position.x - line.descent + size.width
+                    underlineStart.x = line.position.x - line.descent/3 + size.width
                     length = line.bounds.size.height
                 }else {
-                    underlineStart.y = line.position.y + line.descent
-                    underlineStart.x = point.x
+                    underlineStart.y = line.position.y + line.descent/3
+                    underlineStart.x = line.position.x
                     length = line.bounds.size.width
                 }
                drawLineStyle(context: context, length: length, lineWidth: underline!.width, style: underline!.style, position: underlineStart, color: underline!.color.cgColor, isVertical: isVertical)
@@ -562,8 +562,8 @@ class LHTextLayout: NSObject {
                 context.addLine(to: toPoint)
                 context.strokePath()
 
-                context.move(to: CGPoint.init(x: position.x - 2, y: position.y))
-                context.addLine(to: CGPoint.init(x: position.x - 2, y: position.y + length))
+                context.move(to: CGPoint.init(x: position.x - 1+w, y: position.y))
+                context.addLine(to: CGPoint.init(x: position.x - 1+w, y: position.y + length))
                 context.strokePath()
             }
 
@@ -590,16 +590,14 @@ class LHTextLayout: NSObject {
                 context.addLine(to: toPoint)
                 context.strokePath()
 
-                context.move(to: CGPoint.init(x: position.x, y: position.y + 2))
-                context.addLine(to: CGPoint.init(x: position.x + length, y: position.y + 2))
+                context.move(to: CGPoint.init(x: position.x, y: position.y + 1 + w))
+                context.addLine(to: CGPoint.init(x: position.x + length, y: position.y + 1 + w))
                 context.strokePath()
             }
 
         }
         context.restoreGState()
     }
-
-
 
 
 
@@ -847,11 +845,12 @@ extension LHTextLayout {
         
         point.y -= self.textInsets.top
         if textContainer.verticalForm {
+            point.x -= self.bounds.width
             point.x -= self.textInsets.right
         }else{
             point.x -= self.textInsets.left
         }
-        
+
         for line in self.lines {
             
             if line.bounds.contains(point) {

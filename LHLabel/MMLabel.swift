@@ -118,7 +118,6 @@ class MMLabel: UIView {
     func onTouch(_ touch: UITouch) -> Bool {
         var location = touch.location(in: self)
         location.y -= middlePoint(rect: bounds).y
-        location.x -= frame.size.width
         var avoidSuperCall = false
 
         switch touch.phase {
