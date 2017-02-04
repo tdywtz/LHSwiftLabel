@@ -499,6 +499,7 @@ class LHTextLayout: NSObject {
         //context.translateBy(x: <#T##CGFloat#>, y: <#T##CGFloat#>)
 
         for i in 0 ..< lines.count {
+
             var line = lines[i]
             if layout.truncationTokenLine != nil {
                 if layout.truncationTokenLine!.index == line.index {
@@ -507,30 +508,46 @@ class LHTextLayout: NSObject {
             }
             let runs = CTLineGetGlyphRuns(line.ctLine!)
             for r in 0 ..< CFArrayGetCount(runs) {
+              
                 let runRawPointer = CFArrayGetValueAtIndex(runs, r)
                 let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
                 let glyphCount = CTRunGetGlyphCount(run)
                 if glyphCount == 0 {
                     continue
                 }
+
+                let glyphPositions = UnsafeMutablePointer<CGPoint>.allocate(capacity: glyphCount)
+
+                CTRunGetPositions(run, CFRangeMake(0, 0), glyphPositions)
+                var ascent: CGFloat = 0
+                var descent: CGFloat = 0
+                var leading: CGFloat = 0
+                let width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading)
+                
                 let attrs: NSDictionary = CTRunGetAttributes(run) as NSDictionary
                 let underline = attrs[LHTextUnderlineStyleAttributeName] as? LHTextDecoration
                 if underline == nil {
+                    glyphPositions.deallocate(capacity: glyphCount)
                     continue
                 }
 
                 var underlineStart = CGPoint.zero
                 var length: CGFloat = 0
 
+
                 if isVertical {
                     underlineStart.x = line.position.x - line.descent/3 + size.width
-                    length = line.bounds.size.height
+                    underlineStart.y = line.position.y + glyphPositions[0].x
+                    length = CGFloat(width)
                 }else {
-                    underlineStart.y = line.position.y + line.descent/3
-                    underlineStart.x = line.position.x
-                    length = line.bounds.size.width
+                    underlineStart.y = line.position.y  + line.descent/3
+                    underlineStart.x = line.position.x + glyphPositions[0].x
+                    length = CGFloat(width)
                 }
-               drawLineStyle(context: context, length: length, lineWidth: underline!.width, style: underline!.style, position: underlineStart, color: underline!.color.cgColor, isVertical: isVertical)
+                glyphPositions.deallocate(capacity: glyphCount)
+
+                drawLineStyle(context: context, length: length, lineWidth: underline!.width, style: underline!.style, position: underlineStart, color: underline!.color.cgColor, isVertical: isVertical)
+                
             }
         }
          context.restoreGState()
@@ -539,6 +556,7 @@ class LHTextLayout: NSObject {
 
     func drawLineStyle(context: CGContext, length: CGFloat, lineWidth: CGFloat, style:LHTextUnderlineStyle, position: CGPoint, color: CGColor, isVertical: Bool) {
         context.saveGState()
+
         if isVertical {
             let toPoint = CGPoint.init(x: position.x, y: position.y + length)
 
@@ -562,14 +580,12 @@ class LHTextLayout: NSObject {
                 context.addLine(to: toPoint)
                 context.strokePath()
 
-                context.move(to: CGPoint.init(x: position.x - 1+w, y: position.y))
-                context.addLine(to: CGPoint.init(x: position.x - 1+w, y: position.y + length))
+                context.move(to: CGPoint.init(x: position.x - 1-w, y: position.y))
+                context.addLine(to: CGPoint.init(x: position.x - 1-w, y: position.y + length))
                 context.strokePath()
             }
-
         }else{
             let toPoint = CGPoint.init(x: position.x + length, y: position.y)
-
             var w: CGFloat = lineWidth
             if style == .styleThick {
                 w *= 2
@@ -590,8 +606,8 @@ class LHTextLayout: NSObject {
                 context.addLine(to: toPoint)
                 context.strokePath()
 
-                context.move(to: CGPoint.init(x: position.x, y: position.y + 1 + w))
-                context.addLine(to: CGPoint.init(x: position.x + length, y: position.y + 1 + w))
+                context.move(to: CGPoint.init(x: position.x, y: position.y + 1))
+                context.addLine(to: CGPoint.init(x: position.x + length, y: position.y + 1))
                 context.strokePath()
             }
 
@@ -792,6 +808,29 @@ class LHTextLayout: NSObject {
     }
 
 
+  }
+
+extension LHTextLayout {
+    func glyphIndex(at point: CGPoint) -> Int {
+        var point = point
+        
+        point.y -= self.textInsets.top
+        if textContainer.verticalForm {
+            point.x -= self.bounds.width
+            point.x -= self.textInsets.right
+        }else{
+            point.x -= self.textInsets.left
+        }
+
+        for line in self.lines {
+            
+            if line.bounds.contains(point) {
+                return line.glyphIndex(at: point)
+            }
+        }
+        return NSNotFound
+    }
+
     func VerticalFormRotateCharacterSet() -> NSCharacterSet {
         let set = NSMutableCharacterSet.init()
         set.addCharacters(in: NSMakeRange(0x1100, 256))// Hangul Jamo
@@ -824,39 +863,17 @@ class LHTextLayout: NSObject {
         set.addCharacters(in: NSMakeRange(0xFF00, 240))// Halfwidth and Fullwidth Forms
         set.addCharacters(in: NSMakeRange(0x1F200, 256))// Enclosed Ideographic Supplement
         set.addCharacters(in: NSMakeRange(0x1F300, 768))// Enclosed Ideographic Supplement
-        
+
         set.addCharacters(in: NSMakeRange(0x1F600, 80))// Emoticons (Emoji)
         set.addCharacters(in: NSMakeRange(0x1F680, 128))// Transport and Map Symbols
         // See http://unicode-table.com/ for more information.
         return set
-        
+
     }
-    
+
     func VerticalFormRotateAndMoveCharacterSet() -> NSCharacterSet {
         let set = NSMutableCharacterSet.init()
         set.addCharacters(in: "，。、")
         return set
-    }
-}
-
-extension LHTextLayout {
-    func glyphIndex(at point: CGPoint) -> Int {
-        var point = point
-        
-        point.y -= self.textInsets.top
-        if textContainer.verticalForm {
-            point.x -= self.bounds.width
-            point.x -= self.textInsets.right
-        }else{
-            point.x -= self.textInsets.left
-        }
-
-        for line in self.lines {
-            
-            if line.bounds.contains(point) {
-                return line.glyphIndex(at: point)
-            }
-        }
-        return NSNotFound
     }
 }

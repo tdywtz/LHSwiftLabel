@@ -96,7 +96,7 @@ class LHTextAttibute: NSObject {
 
 class LHTextDecoration: NSObject {
     var style = LHTextUnderlineStyle.styleNone
-    var width: CGFloat = 0.2
+    var width: CGFloat = 1
     var color = UIColor.red
 
     class func decoration(style: LHTextUnderlineStyle, width:CGFloat, color: UIColor) -> LHTextDecoration {
@@ -105,6 +105,13 @@ class LHTextDecoration: NSObject {
         one.width = width
         one.color = color
         return one
+    }
+
+    override init() {
+      super.init()
+        style = .styleSingle
+        width = 1
+        color = .red
     }
 }
 
