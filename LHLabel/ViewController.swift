@@ -16,9 +16,15 @@ class ViewController: UIViewController {
 
         let mm = MMLabel.init(frame: CGRect.init(x: 10, y: 100, width: 200, height: 400))
         mm.backgroundColor = UIColor.init(colorLiteralRed: 0.1, green: 0.5, blue: 0.8, alpha: 0.8)
+<<<<<<< HEAD
       //  mm.insets = UIEdgeInsets.init(top: 10, left: 10, bottom: 30, right: 40)
         mm.verticalForm = true
           // mm.exclusionPaths = [self.buffer(frame: CGRect.init(x: 60, y: 50, width: 40, height: 40))]
+=======
+       // mm.insets = UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10)
+      //  mm.verticalForm = true
+        //   mm.exclusionPaths = [self.buffer(frame: CGRect.init(x: 20, y: 20, width: 40, height: 40))]
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
         self.view.addSubview(mm)
        //mm.maximumNumberOfRows = 2;
       //  let p = self.buffer(frame: CGRect.init(x: 20, y: 20, width: 30, height: 30))
@@ -29,13 +35,17 @@ var text = "my Hart is go on 沧海月明珠有泪，蓝田日暖玉生烟，此
         att.lh_font = UIFont.systemFont(ofSize: 15)
         att.lh_color = UIColor.white
         att.lh_lineSpacing = 5
+<<<<<<< HEAD
         att.lh_textDecoration = LHTextDecoration.decoration(style: .styleDouble, width: 0.2, color: UIColor.red)
+=======
+        att.lh_textDecoration = LHTextDecoration.init()
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
         // att.insert(image: UIImage.init(named: "buffer"), frame: CGRect.init(x: 0, y: 0, width: 60, height: 30), index: 3)
 
 
         let hi = LHTextHighlight()
         hi.tapAction = { (a,b,c) in
-         
+         print(a)
         }
         att.lh_set(textHighlight: hi, range: NSRange.init(location: 0, length: 5))
         mm.attributedText = att
