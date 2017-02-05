@@ -34,10 +34,10 @@ func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate
         return r.width
     })
 
-    let a = UnsafeMutableRawPointer.allocate(bytes: 0, alignedTo: 0)
-    a.initializeMemory(as: LHTextAttachment.self, to: attachment)
+    let one = UnsafeMutableRawPointer.allocate(bytes: 0, alignedTo: 0)
+    one.initializeMemory(as: LHTextAttachment.self, to: attachment)
     //a.deallocate(bytes: 0, alignedTo: 0)
-    return CTRunDelegateCreate(&cbs, a)!
+    return CTRunDelegateCreate(&cbs, one)!
 }
 
 typealias LHTextAction = (UIView, NSDictionary, NSRange)->Void

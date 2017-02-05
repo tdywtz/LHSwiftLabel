@@ -109,7 +109,11 @@ class MMLabel: UIView {
     func middlePoint(rect: CGRect) -> CGPoint {
         var point = CGPoint.zero
         if textLayout.bounds.height < rect.height {
-            point.y = (rect.height - textLayout.bounds.height)/2
+            if !self.verticalForm {
+                 point.y = (rect.height - textLayout.bounds.height)/2
+            }else {
+                point.x = (rect.width - textLayout.bounds.width)/2
+            }
         }
         return point
     }
@@ -121,7 +125,7 @@ class MMLabel: UIView {
         var avoidSuperCall = false
 
         switch touch.phase {
-        case .began, .moved:
+        case .began:
             if let element = touche(at: location) {
                 let matt = innerText.mutableCopy() as! NSMutableAttributedString
                 if element.value.isKind(of: LHTextHighlight.classForCoder()) {
@@ -135,6 +139,9 @@ class MMLabel: UIView {
                textLayout = LHTextLayout.layout(container: textContainer, text: att);
 
             }
+        case .moved:
+            break
+            
         case .ended:
             if let element = touche(at: location) {
                 if element.value.isKind(of: LHTextHighlight.classForCoder()) {
