@@ -355,6 +355,7 @@ class LHTextLayout: NSObject {
                    // att?.append(NSAttributedString.init(string:LHTextTruncationToken))
                     att?.replaceCharacters(in: NSRange.init(location: att!.length - 1, length: 1), with: LHTextTruncationToken)
                     let ctLastLineExtend = CTLineCreateWithAttributedString(att! as CFAttributedString)
+<<<<<<< HEAD
                     var truncatedWidth = lastLine.bounds.width
                     if vertical {
                         truncatedWidth = lastLine.bounds.height;
@@ -363,11 +364,23 @@ class LHTextLayout: NSObject {
 //                    if cgPath!.isRect(&cgPathRect) {
 //                        if vertical {
 //                            truncatedWidth = lastLine.bounds.height;
+=======
+                    let truncatedWidth = vertical ? lastLine.bounds.height : lastLine.bounds.width
+                   
+//                    var cgPathRect = CGRect.zero
+//                    if cgPath!.isRect(&cgPathRect) {
+//                        if vertical {
+//                            truncatedWidth = cgPathRect.size.height;
+>>>>>>> origin/master
 //                        } else {
 //                            truncatedWidth = cgPathRect.size.width;
 //                        }
 //                    }
+<<<<<<< HEAD
 
+=======
+                  
+>>>>>>> origin/master
                     let line = CTLineCreateTruncatedLine(ctLastLineExtend, Double(truncatedWidth), .end, truncationTokenLine)
 
                     if line != nil {
@@ -499,6 +512,7 @@ class LHTextLayout: NSObject {
     func draw(context: CGContext, rect: CGRect, point:CGPoint, targetView: UIView, targetLayer: CALayer) {
 
       autoreleasepool {
+<<<<<<< HEAD
 
         var cPoint = point
         cPoint.y += textInsets.top
@@ -507,6 +521,18 @@ class LHTextLayout: NSObject {
         }else {
             cPoint.x += textInsets.left
         }
+=======
+        
+        var cPoint = point
+        if (self.textContainer.verticalForm) {
+            cPoint.x -= _textInsets.right
+            cPoint.y += _textInsets.top
+        }else {
+            cPoint.x += _textInsets.left
+            cPoint.y += _textInsets.top
+        }
+        
+>>>>>>> origin/master
 
             drawTextDecoracotion(layout: self, context: context, size: rect.size, point: cPoint)
             drawText(layout: self, context: context, size: rect.size, point: cPoint)
@@ -520,12 +546,15 @@ class LHTextLayout: NSObject {
         let lines = layout.lines
         context.saveGState()
         context.translateBy(x: point.x, y: point.y)
-
+        
         let isVertical = layout.textContainer.verticalForm
         //context.translateBy(x: <#T##CGFloat#>, y: <#T##CGFloat#>)
-
         for i in 0 ..< lines.count {
+<<<<<<< HEAD
+            
+=======
 
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
             var line = lines[i]
             if layout.truncationTokenLine != nil {
                 if layout.truncationTokenLine!.index == line.index {
@@ -534,16 +563,26 @@ class LHTextLayout: NSObject {
             }
             let runs = CTLineGetGlyphRuns(line.ctLine!)
             for r in 0 ..< CFArrayGetCount(runs) {
+<<<<<<< HEAD
+                
+=======
               
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
                 let runRawPointer = CFArrayGetValueAtIndex(runs, r)
                 let run = Unmanaged<AnyObject>.fromOpaque(runRawPointer!).takeUnretainedValue() as! CTRun
                 let glyphCount = CTRunGetGlyphCount(run)
                 if glyphCount == 0 {
                     continue
                 }
+<<<<<<< HEAD
+                
+                let glyphPositions = UnsafeMutablePointer<CGPoint>.allocate(capacity: glyphCount)
+                
+=======
 
                 let glyphPositions = UnsafeMutablePointer<CGPoint>.allocate(capacity: glyphCount)
 
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
                 CTRunGetPositions(run, CFRangeMake(0, 0), glyphPositions)
                 var ascent: CGFloat = 0
                 var descent: CGFloat = 0
@@ -556,11 +595,16 @@ class LHTextLayout: NSObject {
                     glyphPositions.deallocate(capacity: glyphCount)
                     continue
                 }
-
+                
                 var underlineStart = CGPoint.zero
                 var length: CGFloat = 0
+<<<<<<< HEAD
+                
+                
+=======
 
 
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
                 if isVertical {
                     underlineStart.x = line.position.x - line.descent/3 + size.width
                     underlineStart.y = line.position.y + glyphPositions[0].x
@@ -571,12 +615,16 @@ class LHTextLayout: NSObject {
                     length = CGFloat(width)
                 }
                 glyphPositions.deallocate(capacity: glyphCount)
+<<<<<<< HEAD
+                
+=======
 
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
                 drawLineStyle(context: context, length: length, lineWidth: underline!.width, style: underline!.style, position: underlineStart, color: underline!.color.cgColor, isVertical: isVertical)
                 
             }
         }
-         context.restoreGState()
+        context.restoreGState()
     }
 
 
@@ -585,7 +633,7 @@ class LHTextLayout: NSObject {
 
         if isVertical {
             let toPoint = CGPoint.init(x: position.x, y: position.y + length)
-
+            let space: CGFloat =  2
             var w: CGFloat = lineWidth
             if style == .styleThick {
                 w *= 2
@@ -606,13 +654,20 @@ class LHTextLayout: NSObject {
                 context.addLine(to: toPoint)
                 context.strokePath()
 
+<<<<<<< HEAD
+                context.move(to: CGPoint.init(x: position.x - space+w, y: position.y))
+                context.addLine(to: CGPoint.init(x: position.x - space+w, y: position.y + length))
+=======
                 context.move(to: CGPoint.init(x: position.x - 1-w, y: position.y))
                 context.addLine(to: CGPoint.init(x: position.x - 1-w, y: position.y + length))
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
                 context.strokePath()
             }
         }else{
             let toPoint = CGPoint.init(x: position.x + length, y: position.y)
             var w: CGFloat = lineWidth
+            let space: CGFloat = 2
+            
             if style == .styleThick {
                 w *= 2
             }
@@ -632,8 +687,13 @@ class LHTextLayout: NSObject {
                 context.addLine(to: toPoint)
                 context.strokePath()
 
+<<<<<<< HEAD
+                context.move(to: CGPoint.init(x: position.x, y: position.y + space + w))
+                context.addLine(to: CGPoint.init(x: position.x + length, y: position.y + space + w))
+=======
                 context.move(to: CGPoint.init(x: position.x, y: position.y + 1))
                 context.addLine(to: CGPoint.init(x: position.x + length, y: position.y + 1))
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
                 context.strokePath()
             }
 
@@ -658,6 +718,7 @@ class LHTextLayout: NSObject {
             }
             let posX = line.position.x + point.x
             let posY = (size.height - line.position.y - point.y)
+
 
             let ctRuns = CTLineGetGlyphRuns(line.ctLine!)
             for k in 0 ..< CFArrayGetCount(ctRuns) {
@@ -690,6 +751,7 @@ class LHTextLayout: NSObject {
                 context.saveGState()
                 context.textMatrix = context.textMatrix.concatenating(runTextMatrix)
             }
+    
             CTRunDraw(run, context, CFRangeMake(0, 0))
             if  !runTextMatrixIsID {
                 context.restoreGState()
@@ -763,16 +825,26 @@ class LHTextLayout: NSObject {
 
                     if  !CJK{
                         context.rotate(by:CGFloat(-90 * M_PI / 180))
+<<<<<<< HEAD
                         let x = line.position.y - size.height + glyphPositions[i].x + textInsets.top
                         let y = line.position.x -  glyphPositions[i].y + size.width - textInsets.right
+=======
+                        let x = line.position.y - size.height + glyphPositions[i].x + textContainer.insets.top
+                        let y = line.position.x -  glyphPositions[i].y + size.width  - textContainer.insets.right
+>>>>>>> origin/master
                         context.textPosition = CGPoint.init(x: x, y: y)
 
                     }else {
                         // CJK glyph, need rotated
                         let ofs = (ascent - descent) * 0.5
                         let w = glyphAdvances[i].width * 0.5
+<<<<<<< HEAD
                         let x = line.position.x + glyphPositions[i].y - (descent)/2 + size.width - textInsets.right
                         let y = -line.position.y  + size.height - glyphPositions[i].x - (ofs + w) - textInsets.top
+=======
+                        let x = line.position.x + glyphPositions[i].y - (descent)/2 + size.width  - textContainer.insets.right
+                        let y = -line.position.y  + size.height - glyphPositions[i].x - (ofs + w) - textContainer.insets.top
+>>>>>>> origin/master
 
                         context.textPosition = CGPoint.init(x: x, y: y)
                     }
@@ -901,3 +973,28 @@ extension LHTextLayout {
         return set
     }
 }
+<<<<<<< HEAD
+
+extension LHTextLayout {
+    func glyphIndex(at point: CGPoint) -> Int {
+        var point = point
+        
+        point.y -= self.textInsets.top
+        if textContainer.verticalForm {
+            point.x -= self.bounds.width
+            point.x += self.textInsets.right
+        }else{
+            point.x -= self.textInsets.left
+        }
+
+        for line in self.lines {
+            
+            if line.bounds.contains(point) {
+                return line.glyphIndex(at: point)
+            }
+        }
+        return NSNotFound
+    }
+}
+=======
+>>>>>>> edee20476cc1548de5aab47cf0f2dec4783092fb
