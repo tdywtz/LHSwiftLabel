@@ -15,17 +15,26 @@
 		1567B1DC1DD6251000CEB507 /* LHLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1567B1DB1DD6251000CEB507 /* LHLabelTests.swift */; };
 		1567B1E71DD6251000CEB507 /* LHLabelUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1567B1E61DD6251000CEB507 /* LHLabelUITests.swift */; };
 		1567B1F51DD6253600CEB507 /* LHLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1567B1F41DD6253600CEB507 /* LHLabel.swift */; };
-		1567B1F71DD6258A00CEB507 /* UIView+LHLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */; };
 		15ACA7551DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACA7541DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift */; };
 		15ACA7571DD6B1C20054E6C7 /* LHTextLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACA7561DD6B1C20054E6C7 /* LHTextLayout.swift */; };
+		4D0F455F1E77D0E400E9FF03 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D0F455E1E77D0E400E9FF03 /* String+Extension.swift */; };
 		4D2C990B1E13712A003F299F /* lantian.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4D2C990A1E13712A003F299F /* lantian.jpg */; };
 		4D3CE12A1E0166890091F6F6 /* MMLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D3CE1291E0166890091F6F6 /* MMLabel.swift */; };
 		4D93C2041DE57B2C00AC89CF /* buffer.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D93C2031DE57B2C00AC89CF /* buffer.png */; };
 		4DDD16EF1DDC2F0D0084AA3F /* skt1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4DDD16EE1DDC2F0D0084AA3F /* skt1.jpg */; };
 		4DE645D41E13493B00DE5792 /* LHTextAttibute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE645D31E13493B00DE5792 /* LHTextAttibute.swift */; };
 		4DE645D81E13656C00DE5792 /* UIFont+LH.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DE645D71E13656C00DE5792 /* UIFont+LH.m */; };
+		4DF062471E6FE6D900AD5430 /* CCGL.c in Sources */ = {isa = PBXBuildFile; fileRef = 4DF062451E6FE6D900AD5430 /* CCGL.c */; };
 		4DF7BCCE1DEE626F00EFD9C0 /* RegexParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF7BCCD1DEE626F00EFD9C0 /* RegexParser.swift */; };
 		4DF889DB1E0A836200784CE1 /* LHTextLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF889DA1E0A836200784CE1 /* LHTextLine.swift */; };
+		4DFCB1141E78CE2F0069994D /* NSObject+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFCB1131E78CE2F0069994D /* NSObject+Extension.swift */; };
+		4DFCB1161E78CF4E0069994D /* UIResponder+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFCB1151E78CF4E0069994D /* UIResponder+Extension.swift */; };
+		4DFCB1181E78D6270069994D /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFCB1171E78D6270069994D /* DownloadManager.swift */; };
+		4DFCB11E1E78DDCB0069994D /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DFCB1191E78D8610069994D /* Alamofire.framework */; };
+		4DFCB11F1E78DDCE0069994D /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DFCB11B1E78D8660069994D /* SnapKit.framework */; };
+		4DFCB1211E7906560069994D /* BasicNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFCB1201E7906560069994D /* BasicNavigationController.swift */; };
+		4DFCB1231E79068A0069994D /* LHTransitionAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFCB1221E79068A0069994D /* LHTransitionAnimation.swift */; };
+		67544F98A1D6EB5CDBA335DF /* Pods_LHLabel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 351AA81378414B849D0C7621 /* Pods_LHLabel.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +55,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E22FE2E6FA0809343C10445 /* Pods-LHLabel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LHLabel.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LHLabel/Pods-LHLabel.debug.xcconfig"; sourceTree = "<group>"; };
 		1567B1C31DD6251000CEB507 /* LHLabel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LHLabel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1567B1C61DD6251000CEB507 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1567B1C81DD6251000CEB507 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -60,9 +70,10 @@
 		1567B1E61DD6251000CEB507 /* LHLabelUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHLabelUITests.swift; sourceTree = "<group>"; };
 		1567B1E81DD6251000CEB507 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1567B1F41DD6253600CEB507 /* LHLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LHLabel.swift; sourceTree = "<group>"; };
-		1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+LHLabel.swift"; sourceTree = "<group>"; };
 		15ACA7541DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSMutableAttributedString+LHText.swift"; sourceTree = "<group>"; };
 		15ACA7561DD6B1C20054E6C7 /* LHTextLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LHTextLayout.swift; sourceTree = "<group>"; };
+		351AA81378414B849D0C7621 /* Pods_LHLabel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LHLabel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D0F455E1E77D0E400E9FF03 /* String+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		4D2C990A1E13712A003F299F /* lantian.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lantian.jpg; sourceTree = "<group>"; };
 		4D3CE1291E0166890091F6F6 /* MMLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MMLabel.swift; sourceTree = "<group>"; };
 		4D93C2031DE57B2C00AC89CF /* buffer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buffer.png; sourceTree = "<group>"; };
@@ -71,8 +82,18 @@
 		4DE645D51E13656B00DE5792 /* LHLabel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LHLabel-Bridging-Header.h"; sourceTree = "<group>"; };
 		4DE645D61E13656C00DE5792 /* UIFont+LH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFont+LH.h"; sourceTree = "<group>"; };
 		4DE645D71E13656C00DE5792 /* UIFont+LH.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+LH.m"; sourceTree = "<group>"; };
+		4DF062451E6FE6D900AD5430 /* CCGL.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CCGL.c; sourceTree = "<group>"; };
+		4DF062461E6FE6D900AD5430 /* CCGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGL.h; sourceTree = "<group>"; };
 		4DF7BCCD1DEE626F00EFD9C0 /* RegexParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexParser.swift; sourceTree = "<group>"; };
 		4DF889DA1E0A836200784CE1 /* LHTextLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LHTextLine.swift; sourceTree = "<group>"; };
+		4DFCB1131E78CE2F0069994D /* NSObject+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSObject+Extension.swift"; sourceTree = "<group>"; };
+		4DFCB1151E78CF4E0069994D /* UIResponder+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIResponder+Extension.swift"; sourceTree = "<group>"; };
+		4DFCB1171E78D6270069994D /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
+		4DFCB1191E78D8610069994D /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../Library/Developer/Xcode/DerivedData/LHLabel-detlotpelmufubdrrkdfagijvlve/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
+		4DFCB11B1E78D8660069994D /* SnapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SnapKit.framework; path = "../../Library/Developer/Xcode/DerivedData/LHLabel-detlotpelmufubdrrkdfagijvlve/Build/Products/Debug-iphonesimulator/SnapKit/SnapKit.framework"; sourceTree = "<group>"; };
+		4DFCB1201E7906560069994D /* BasicNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicNavigationController.swift; sourceTree = "<group>"; };
+		4DFCB1221E79068A0069994D /* LHTransitionAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LHTransitionAnimation.swift; sourceTree = "<group>"; };
+		51B0E8FA5E8F900EB2FA2AD9 /* Pods-LHLabel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LHLabel.release.xcconfig"; path = "Pods/Target Support Files/Pods-LHLabel/Pods-LHLabel.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +101,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4DFCB11F1E78DDCE0069994D /* SnapKit.framework in Frameworks */,
+				4DFCB11E1E78DDCB0069994D /* Alamofire.framework in Frameworks */,
+				67544F98A1D6EB5CDBA335DF /* Pods_LHLabel.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +131,8 @@
 				1567B1DA1DD6251000CEB507 /* LHLabelTests */,
 				1567B1E51DD6251000CEB507 /* LHLabelUITests */,
 				1567B1C41DD6251000CEB507 /* Products */,
+				B827098845836D734E423AB7 /* Pods */,
+				AAA1F71186DFF63CA85D9C9D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -125,10 +151,14 @@
 			children = (
 				1567B1C61DD6251000CEB507 /* AppDelegate.swift */,
 				1567B1C81DD6251000CEB507 /* ViewController.swift */,
+				4D0F455C1E77D07800E9FF03 /* UIkit */,
+				4D0F455D1E77D08600E9FF03 /* Foundation */,
 				1567B1F41DD6253600CEB507 /* LHLabel.swift */,
 				4D3CE1291E0166890091F6F6 /* MMLabel.swift */,
+				4DFCB1171E78D6270069994D /* DownloadManager.swift */,
 				4DF7BCCD1DEE626F00EFD9C0 /* RegexParser.swift */,
-				1567B1F61DD6258A00CEB507 /* UIView+LHLabel.swift */,
+				4DF062451E6FE6D900AD5430 /* CCGL.c */,
+				4DF062461E6FE6D900AD5430 /* CCGL.h */,
 				4DDD16EE1DDC2F0D0084AA3F /* skt1.jpg */,
 				4D93C2031DE57B2C00AC89CF /* buffer.png */,
 				4D2C990A1E13712A003F299F /* lantian.jpg */,
@@ -165,6 +195,44 @@
 			path = LHLabelUITests;
 			sourceTree = "<group>";
 		};
+		4D0F455C1E77D07800E9FF03 /* UIkit */ = {
+			isa = PBXGroup;
+			children = (
+				4DFCB1131E78CE2F0069994D /* NSObject+Extension.swift */,
+				4DFCB1151E78CF4E0069994D /* UIResponder+Extension.swift */,
+				4DFCB1201E7906560069994D /* BasicNavigationController.swift */,
+				4DFCB1221E79068A0069994D /* LHTransitionAnimation.swift */,
+			);
+			name = UIkit;
+			sourceTree = "<group>";
+		};
+		4D0F455D1E77D08600E9FF03 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				4D0F455E1E77D0E400E9FF03 /* String+Extension.swift */,
+			);
+			name = Foundation;
+			sourceTree = "<group>";
+		};
+		AAA1F71186DFF63CA85D9C9D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4DFCB11B1E78D8660069994D /* SnapKit.framework */,
+				4DFCB1191E78D8610069994D /* Alamofire.framework */,
+				351AA81378414B849D0C7621 /* Pods_LHLabel.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B827098845836D734E423AB7 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0E22FE2E6FA0809343C10445 /* Pods-LHLabel.debug.xcconfig */,
+				51B0E8FA5E8F900EB2FA2AD9 /* Pods-LHLabel.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -172,9 +240,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1567B1EB1DD6251000CEB507 /* Build configuration list for PBXNativeTarget "LHLabel" */;
 			buildPhases = (
+				391DC45D00F191CB339ABF12 /* [CP] Check Pods Manifest.lock */,
 				1567B1BF1DD6251000CEB507 /* Sources */,
 				1567B1C01DD6251000CEB507 /* Frameworks */,
 				1567B1C11DD6251000CEB507 /* Resources */,
+				761C715B729A15E6D318547F /* [CP] Embed Pods Frameworks */,
+				73A494C7291908DF2D4E06D0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -299,22 +370,76 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		391DC45D00F191CB339ABF12 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		73A494C7291908DF2D4E06D0 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LHLabel/Pods-LHLabel-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		761C715B729A15E6D318547F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LHLabel/Pods-LHLabel-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		1567B1BF1DD6251000CEB507 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4DFCB1211E7906560069994D /* BasicNavigationController.swift in Sources */,
 				4DE645D81E13656C00DE5792 /* UIFont+LH.m in Sources */,
+				4DFCB1181E78D6270069994D /* DownloadManager.swift in Sources */,
 				1567B1C91DD6251000CEB507 /* ViewController.swift in Sources */,
 				1567B1F51DD6253600CEB507 /* LHLabel.swift in Sources */,
 				4D3CE12A1E0166890091F6F6 /* MMLabel.swift in Sources */,
 				4DF7BCCE1DEE626F00EFD9C0 /* RegexParser.swift in Sources */,
 				4DE645D41E13493B00DE5792 /* LHTextAttibute.swift in Sources */,
+				4DFCB1161E78CF4E0069994D /* UIResponder+Extension.swift in Sources */,
+				4D0F455F1E77D0E400E9FF03 /* String+Extension.swift in Sources */,
+				4DFCB1231E79068A0069994D /* LHTransitionAnimation.swift in Sources */,
 				15ACA7551DD6B1A20054E6C7 /* NSMutableAttributedString+LHText.swift in Sources */,
 				1567B1C71DD6251000CEB507 /* AppDelegate.swift in Sources */,
+				4DF062471E6FE6D900AD5430 /* CCGL.c in Sources */,
 				15ACA7571DD6B1C20054E6C7 /* LHTextLayout.swift in Sources */,
 				4DF889DB1E0A836200784CE1 /* LHTextLine.swift in Sources */,
-				1567B1F71DD6258A00CEB507 /* UIView+LHLabel.swift in Sources */,
+				4DFCB1141E78CE2F0069994D /* NSObject+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -462,6 +587,7 @@
 		};
 		1567B1EC1DD6251000CEB507 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0E22FE2E6FA0809343C10445 /* Pods-LHLabel.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -478,6 +604,7 @@
 		};
 		1567B1ED1DD6251000CEB507 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 51B0E8FA5E8F900EB2FA2AD9 /* Pods-LHLabel.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

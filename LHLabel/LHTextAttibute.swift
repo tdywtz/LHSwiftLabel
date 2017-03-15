@@ -8,12 +8,6 @@
 
 import UIKit
 
-public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
-public let  LHTextHighlightAttributeName = "LHTextHighlightAttributeName"
-public let  LHTextUnderlineStyleAttributeName = "LHTextUnderlineStyleAttributeName"
-
-public let  LHTextTruncationToken = "\u{2026}"
-
 func getRunDelegate(attachment: LHTextAttachment, font: UIFont) -> CTRunDelegate {
 
     var cbs = CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (refCon) -> Void in
@@ -112,6 +106,14 @@ class LHTextDecoration: NSObject {
         style = .styleSingle
         width = 1
         color = .red
+    }
+
+    override func copy() -> Any {
+        let one = LHTextDecoration.init()
+        one.style = style
+        one.width = width
+        one.color = color
+        return one
     }
 }
 

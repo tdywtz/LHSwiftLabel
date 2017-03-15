@@ -11,7 +11,16 @@
 #import "LHLabel-Swift.h"
 
 @implementation UIFont (LH)
++ (UIColor *)HexColor:(NSString *)colorString
+{
+    unsigned long colorLong = strtoul(colorString.UTF8String, 0, 16);
 
+    //通过位与方法获取三色值
+    int R = (colorLong & 0xFF0000) >> 16;
+    int G = (colorLong & 0x00FF00) >> 8;
+    int B = colorLong & 0x0000FF;
+    return [UIColor colorWithRed:R / 255.0 green:G / 255.0 blue:B / 255.0 alpha:1.f];
+}
 
 + (NSString *)fontNameSTXingkai_SC_Bold{
     return @"STXingkai-SC-Bold";
@@ -19,6 +28,12 @@
 
 + (void)asynchronouslySetFontName:(NSString *)fontName success:(void(^)(NSString *name))success
 {
+
+    NSMutableAttributedString *att = [[NSMutableAttributedString alloc] initWithString:@"我自横刀向天笑，去留肝胆两昆仑"];
+    att.lh_font = [UIFont systemFontOfSize:15];
+    att.lh_color = [UIColor redColor];
+
+  
 
     UIFont* aFont = [UIFont fontWithName:fontName size:24];
     // If the font is already downloaded

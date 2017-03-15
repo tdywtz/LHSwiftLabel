@@ -11,25 +11,33 @@ import UIKit
 typealias LHElementResult = (range: NSRange, index: Int, value:AnyObject)
 
 class MMLabel: UIView {
+    private let maxLayoutHeight: CGFloat = 1000000
+    private var innerText = NSAttributedString()
+    private var innerTextLayout = LHTextLayout()
+    private var textContainer = LHTextContainer()
 
     var textLayout = LHTextLayout() {
         didSet {
+            innerText = textLayout.attributedText
+            textContainer = textLayout.textContainer
+            innerTextLayout = LHTextLayout.layout(container: textLayout.textContainer, text: innerText)
             setNeedsDisplay()
         }
     }
-    var textContainer = LHTextContainer()
 
 
     var attributedText = NSAttributedString() {
         didSet {
-            innerText = attributedText.mutableCopy() as! NSMutableAttributedString
+
+            self.innerText = attributedText
+
             textContainer.size = frame.size
             textLayout = LHTextLayout.layout(container: textContainer, text: attributedText)
             setNeedsDisplay()
         }
     }
 
-    var preferredMaxLayoutWidth: CGFloat = 320 {
+    var preferredMaxLayoutWidth: CGFloat = 10000 {
         didSet {
             self.invalidateIntrinsicContentSize()
         }
@@ -60,13 +68,18 @@ class MMLabel: UIView {
     }
 
 
-    private let maxLayoutHeight: CGFloat = 1000000
-    private var innerText = NSMutableAttributedString()
-
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         textContainer.size = frame.size
+    }
+
+    override var frame: CGRect {
+        didSet{
+            if !__CGSizeEqualToSize(frame.size, textLayout.bounds.size) {
+             
+            }
+        }
     }
 
 
@@ -100,6 +113,7 @@ class MMLabel: UIView {
     override func draw(_ rect: CGRect) {
 
         let context = UIGraphicsGetCurrentContext()
+        
         if context != nil {
             let point = middlePoint(rect: rect)
             textLayout.draw(context: context!, rect: rect, point: point, targetView: self, targetLayer: self.layer)
@@ -118,12 +132,15 @@ class MMLabel: UIView {
     func onTouch(_ touch: UITouch) -> Bool {
         var location = touch.location(in: self)
         location.y -= middlePoint(rect: bounds).y
+        if verticalForm {
+            location.x -= bounds.width;
+        }
         var avoidSuperCall = false
 
         switch touch.phase {
         case .began, .moved:
             if let element = touche(at: location) {
-                let matt = innerText.mutableCopy() as! NSMutableAttributedString
+                let matt = NSMutableAttributedString.init(attributedString: innerText)
                 if element.value.isKind(of: LHTextHighlight.classForCoder()) {
                  matt.lh_setColor(color: (element.value as! LHTextHighlight).highlightColor, range: element.range)
                 }
@@ -132,9 +149,9 @@ class MMLabel: UIView {
                 avoidSuperCall = true
             }else{
                 let att = innerText.copy() as! NSAttributedString
-               textLayout = LHTextLayout.layout(container: textContainer, text: att);
-
+                textLayout = LHTextLayout.layout(container: textContainer, text: att);
             }
+            break
         case .ended:
             if let element = touche(at: location) {
                 if element.value.isKind(of: LHTextHighlight.classForCoder()) {
@@ -144,10 +161,10 @@ class MMLabel: UIView {
                     }
                 }
                 avoidSuperCall = true
-                
             }
             let att = innerText.copy() as! NSAttributedString
             textLayout = LHTextLayout.layout(container: textContainer, text: att);
+
             break
         case .cancelled:
             let att = innerText.copy() as! NSAttributedString

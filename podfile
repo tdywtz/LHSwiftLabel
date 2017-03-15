@@ -1,0 +1,8 @@
+platform:ios,'8.0'
+use_frameworks!
+target “LHLabel” do
+
+pod 'SnapKit', '~> 3.0.2’
+pod 'Alamofire', '~> 4.0'
+
+end

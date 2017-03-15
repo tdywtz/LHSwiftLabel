@@ -29,6 +29,12 @@
 //* 21. NSAttachmentAttributeName ->设置文本附件,取值为NSTextAttachment对象,常用于文字图片混排
 import UIKit
 
+public let  LHTextAttachmentAttributeName = "LHTextAttachmentAttributeName"
+public let  LHTextHighlightAttributeName = "LHTextHighlightAttributeName"
+public let  LHTextUnderlineStyleAttributeName = "LHTextUnderlineStyleAttributeName"
+
+public let  LHTextTruncationToken = "\u{2026}"
+public let  LHTextAttachmentToken = "\u{FFFC}"
 
 //MARK:
 extension NSMutableAttributedString{
@@ -657,6 +663,19 @@ extension NSMutableAttributedString {
 //MARK:添加图片
 extension NSMutableAttributedString{
 
+    class func lh_attchmentString(content: AnyObject?, bounds: CGRect) -> NSMutableAttributedString {
+        let attribute = NSMutableAttributedString.init(string: LHTextAttachmentToken)
+        let attachment =  LHTextAttachment.attchment(content: content)
+        attachment.bounds = bounds
+
+
+        let deletgate = getRunDelegate(attachment: attachment, font: UIFont.systemFont(ofSize: 10))
+        attribute.lh_setAttribute(attributeName: kCTRunDelegateAttributeName as String, value: deletgate, range: NSRange.init(location: 0, length: 1))
+        attribute.lh_setAttribute(attributeName: LHTextAttachmentAttributeName, value: attachment, range: NSRange.init(location: 0, length: 1))
+
+        return attribute
+    }
+
     class func attribute(attchment: LHTextAttachment) -> NSMutableAttributedString {
 
         var objectReplacementChar:unichar           = 0xFFFC;
@@ -666,7 +685,7 @@ extension NSMutableAttributedString{
         // let attchment = attchment.copy() as! LHTextAttachment
 
         let delegate = getRunDelegate(attachment: attchment, font: UIFont.systemFont(ofSize: 11))
-        att.addAttribute(kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
+        att.lh_setAttribute(attributeName: kCTRunDelegateAttributeName as String, value: delegate, range: NSRange.init(location: 0, length: 1))
         att.lh_setAttribute(attributeName: LHTextAttachmentAttributeName, value: attchment, range: NSRange.init(location: 0, length: 1))
 
         return att

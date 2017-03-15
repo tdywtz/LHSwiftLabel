@@ -64,10 +64,23 @@ class LHTextLayout: NSObject {
 
     var truncationTokenLine: LHTextLine?
 
+    var top: CGFloat = 0
+    var left: CGFloat = 0
+    var bottom: CGFloat = 0 {
+        didSet{
+            top = bottom - bounds.height
+        }
+    }
+    var right: CGFloat = 0 {
+        didSet{
+            left = right - bounds.width
+        }
+    }
+
+
     var textContainer: LHTextContainer {
         return _textContainer
     }
-
 
     var attributedText: NSAttributedString {
         return _attributedText
@@ -83,7 +96,7 @@ class LHTextLayout: NSObject {
 
     var bounds: CGRect {
 
-        let rect = CGRect.init(x: 0, y: 0, width: textBoundingRect.width + _textInsets.left + _textInsets.right, height: textBoundingRect.height + _textInsets.top + _textInsets.bottom)
+        let rect = CGRect.init(x: left, y: top, width: textBoundingRect.width + _textInsets.left + _textInsets.right, height: textBoundingRect.height + _textInsets.top + _textInsets.bottom)
 
         return rect
     }
@@ -121,6 +134,10 @@ class LHTextLayout: NSObject {
         copy._textInsets = _textInsets
         copy.maximumNumberOfRows = maximumNumberOfRows
         copy.truncationTokenLine = truncationTokenLine
+        copy.left = left
+        copy.top = top;
+        copy.bottom = bottom
+        copy.right = right
         return copy
     }
 
@@ -339,14 +356,17 @@ class LHTextLayout: NSObject {
                     att?.replaceCharacters(in: NSRange.init(location: att!.length - 1, length: 1), with: LHTextTruncationToken)
                     let ctLastLineExtend = CTLineCreateWithAttributedString(att! as CFAttributedString)
                     var truncatedWidth = lastLine.bounds.width
-                    var cgPathRect = CGRect.zero
-                    if cgPath!.isRect(&cgPathRect) {
-                        if vertical {
-                            truncatedWidth = cgPathRect.size.height;
-                        } else {
-                            truncatedWidth = cgPathRect.size.width;
-                        }
+                    if vertical {
+                        truncatedWidth = lastLine.bounds.height;
                     }
+//                    var cgPathRect = CGRect.zero
+//                    if cgPath!.isRect(&cgPathRect) {
+//                        if vertical {
+//                            truncatedWidth = lastLine.bounds.height;
+//                        } else {
+//                            truncatedWidth = cgPathRect.size.width;
+//                        }
+//                    }
 
                     let line = CTLineCreateTruncatedLine(ctLastLineExtend, Double(truncatedWidth), .end, truncationTokenLine)
 
@@ -479,8 +499,14 @@ class LHTextLayout: NSObject {
     func draw(context: CGContext, rect: CGRect, point:CGPoint, targetView: UIView, targetLayer: CALayer) {
 
       autoreleasepool {
-            var cPoint = point
-            cPoint.x += _textInsets.left
+
+        var cPoint = point
+        cPoint.y += textInsets.top
+        if self.textContainer.verticalForm {
+            cPoint.x -= textInsets.right
+        }else {
+            cPoint.x += textInsets.left
+        }
 
             drawTextDecoracotion(layout: self, context: context, size: rect.size, point: cPoint)
             drawText(layout: self, context: context, size: rect.size, point: cPoint)
@@ -737,16 +763,16 @@ class LHTextLayout: NSObject {
 
                     if  !CJK{
                         context.rotate(by:CGFloat(-90 * M_PI / 180))
-                        let x = line.position.y - size.height + glyphPositions[i].x
-                        let y = line.position.x -  glyphPositions[i].y + size.width
+                        let x = line.position.y - size.height + glyphPositions[i].x + textInsets.top
+                        let y = line.position.x -  glyphPositions[i].y + size.width - textInsets.right
                         context.textPosition = CGPoint.init(x: x, y: y)
 
                     }else {
                         // CJK glyph, need rotated
                         let ofs = (ascent - descent) * 0.5
                         let w = glyphAdvances[i].width * 0.5
-                        let x = line.position.x + glyphPositions[i].y - (descent)/2 + size.width
-                        let y = -line.position.y  + size.height - glyphPositions[i].x - (ofs + w)
+                        let x = line.position.x + glyphPositions[i].y - (descent)/2 + size.width - textInsets.right
+                        let y = -line.position.y  + size.height - glyphPositions[i].x - (ofs + w) - textInsets.top
 
                         context.textPosition = CGPoint.init(x: x, y: y)
                     }
@@ -813,15 +839,13 @@ class LHTextLayout: NSObject {
 extension LHTextLayout {
     func glyphIndex(at point: CGPoint) -> Int {
         var point = point
-        
+   
         point.y -= self.textInsets.top
         if textContainer.verticalForm {
-            point.x -= self.bounds.width
-            point.x -= self.textInsets.right
+            point.x += self.textInsets.right
         }else{
             point.x -= self.textInsets.left
         }
-
         for line in self.lines {
             
             if line.bounds.contains(point) {
